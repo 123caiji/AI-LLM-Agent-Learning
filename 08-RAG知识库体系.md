@@ -134,7 +134,7 @@
 ### 1.5 最简 RAG 代码示例(LangChain)
 
 ```python
-from langchain_community.document_loaders import TextDocumentLoader
+from langchain_community.document_loaders import TextLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_openai import OpenAIEmbeddings
 from langchain_community.vectorstores import Chroma
@@ -143,8 +143,10 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.runnables import RunnablePassthrough
 from langchain_core.output_parsers import StrOutputParser
 
+# 依赖:pip install langchain langchain-community langchain-openai langchain-text-splitters chromadb
+# 注意:正确的加载器类名是 TextLoader,不存在 TextDocumentLoader
 # 1. 加载文档
-loader = TextDocumentLoader("knowledge.txt")
+loader = TextLoader("knowledge.txt", encoding="utf-8")
 docs = loader.load()
 
 # 2. 分块
@@ -188,27 +190,56 @@ print(answer)
 > 来源:Anthropic Contextual Retrieval 官方文档(2024-09)
 > https://www.anthropic.com/news/contextual-retrieval
 
-Anthropic 在 2024-09 发布的 Contextual Retrieval 方法,通过给每个块加上下文前缀,将检索失败率降低 49%(配合重排降低 67%):
+Anthropic 提出的 Contextual Retrieval(给每个块加文档级上下文前缀)官方效果数据为三级口径:**Contextual Embedding 检索失败率降低 49% → 叠加 Contextual BM25 降低 56% → 再叠加 Reranker 降低 67%**。完整方法、代码与数字详见本章 **7.10 Contextual Retrieval** 节。
+
+### 1.7 零成本最小可运行混合检索 RAG(无需任何 API Key)
+
+上面的示例依赖 OpenAI 付费 API。下面这个 30 行示例**完全本地、零成本**:本地 BGE 嵌入 + Chroma 向量库 + BM25 + RRF 融合,拷下来即可运行:
 
 ```python
-# Contextual Retrieval:给每个 Chunk 加上文档级上下文
-def add_context_to_chunk(chunk, document_summary):
-    """用 LLM 为每个块生成上下文前缀"""
-    prompt = f"""<document>
-{document_summary}
-</document>
-Here is the chunk we want to situate within the whole document:
-<chunk>
-{chunk.content}
-</chunk>
-Please give a short succinct context to situate this chunk within the overall document
-for the purposes of improving search retrieval of the chunk.
-Answer only with the succinct context and nothing else."""
-    
-    context = llm.invoke(prompt)
-    chunk.content = f"{context}\n\n{chunk.content}"
-    return chunk
+# 依赖:pip install rank_bm25 chromadb sentence-transformers
+# 首次运行会自动下载 BGE-small-zh 模型(约 100MB,完全免费)
+import chromadb
+from rank_bm25 import BM25Okapi
+from sentence_transformers import SentenceTransformer
+
+docs = [
+    "RAG 通过检索外部知识库来增强大模型的回答能力",
+    "BM25 是基于词频的经典关键词检索算法",
+    "向量检索利用 Embedding 捕捉语义相似度",
+    "混合检索结合向量与关键词,兼顾语义和字面匹配",
+]
+
+# 1. 向量索引(本地嵌入模型,无需联网 API)
+embedder = SentenceTransformer("BAAI/bge-small-zh-v1.5")
+client = chromadb.Client()                       # 纯内存,无需启动服务
+coll = client.create_collection("kb")
+coll.add(ids=[str(i) for i in range(len(docs))], documents=docs,
+         embeddings=embedder.encode(docs, normalize_embeddings=True).tolist())
+
+# 2. BM25 索引(中文按字切分即可工作的简易分词)
+bm25 = BM25Okapi([list(d) for d in docs])
+
+def hybrid_search(query: str, top_k: int = 2, rrf_k: int = 60):
+    """向量 + BM25 双路检索,RRF 融合"""
+    qv = embedder.encode([query], normalize_embeddings=True).tolist()
+    vec_hits = coll.query(query_embeddings=qv, n_results=len(docs))["ids"][0]
+    bm25_rank = sorted(range(len(docs)),
+                       key=lambda i: bm25.get_scores(list(query))[i], reverse=True)
+    score = {}
+    for rank, did in enumerate(vec_hits):            # 向量路 RRF 分
+        score[int(did)] = score.get(int(did), 0) + 1 / (rrf_k + rank + 1)
+    for rank, i in enumerate(bm25_rank):             # BM25 路 RRF 分
+        score[i] = score.get(i, 0) + 1 / (rrf_k + rank + 1)
+    return [docs[i] for i in sorted(score, key=score.get, reverse=True)[:top_k]]
+
+for doc in hybrid_search("怎么结合语义和关键词检索?"):
+    print("→", doc)
+# → 混合检索结合向量与关键词,兼顾语义和字面匹配
+# → 向量检索利用 Embedding 捕捉语义相似度
 ```
+
+**说明:** 检索到的 `top_k` 个文档拼进任意 LLM 的提示即完成 RAG;生产化版本见第十六章。
 
 ---
 
@@ -432,36 +463,73 @@ GraphRAG 支持两种查询模式:
 [5] LLM 生成:基于丰富上下文回答
 ```
 
-### 3.6 GraphRAG 代码示例
+### 3.6 GraphRAG 使用流程(CLI,官方真实用法)
 
-```python
-# 使用微软 GraphRAG 官方库
-# pip install graphrag
+> 微软 GraphRAG 的官方使用方式是**命令行工具**,不是 Python API(`graphrag.init()` / `graphrag.index.run()` 这类函数式接口**并不存在**,请勿照抄网传示例)。
+> 安装:`pip install graphrag`(需要 Python 3.10+;示例基于 graphrag 1.x/2.x)
+> 官方文档:https://microsoft.github.io/graphrag/
 
-import graphrag
+**第 0 步:准备 API Key**
 
-# 1. 初始化配置
-graphrag.init(root_dir="./graphrag_workspace")
-
-# 2. 构建索引(抽取实体、关系、社区)
-# 命令行: python -m graphrag.index --root ./graphrag_workspace
-graphrag.index.run(
-    root_dir="./graphrag_workspace",
-    documents_dir="./input"
-)
-
-# 3. 全局查询
-from graphrag.query.structured_search.global_search.search import GlobalSearch
-global_search = GlobalSearch(...)
-result = global_search.search("这个文档集讨论了哪些主要主题?")
-print(result.response)
-
-# 4. 局部查询
-from graphrag.query.structured_search.local_search.search import LocalSearch
-local_search = LocalSearch(...)
-result = local_search.search("张三和李四是什么关系?")
-print(result.response)
+```bash
+# GraphRAG 索引构建需要 LLM(默认走 OpenAI),设置环境变量
+export GRAPHRAG_API_KEY="sk-..."        # Windows PowerShell: $env:GRAPHRAG_API_KEY="sk-..."
 ```
+
+**第 1 步:初始化工作区**
+
+```bash
+# 创建工作区并放入原始文档
+mkdir -p ./graphrag_ws/input
+cp ./docs/*.txt ./graphrag_ws/input/    # 放入待索引的 .txt 文档
+
+# 初始化(生成 settings.yaml、prompts/ 等配置文件)
+graphrag init --root ./graphrag_ws
+```
+
+**第 2 步:检查 settings.yaml(关键配置)**
+
+```yaml
+# ./graphrag_ws/settings.yaml(节选,按你的 LLM 供应商修改)
+llm:
+  api_key: ${GRAPHRAG_API_KEY}   # 引用环境变量
+  type: openai_chat              # 或 azure_openai_chat
+  model: gpt-4o-mini             # 索引构建量大,建议先用便宜模型
+embeddings:
+  async_mode: threaded
+  llm:
+    api_key: ${GRAPHRAG_API_KEY}
+    type: openai_embedding
+    model: text-embedding-3-small
+chunks:
+  size: 1200
+  overlap: 100
+```
+
+**第 3 步:构建索引(实体抽取 → 图谱 → 社区摘要,耗 Token)**
+
+```bash
+graphrag index --root ./graphrag_ws
+# 产物在 ./graphrag_ws/output/ 下(entities/relationships/communities 等 parquet 文件)
+# 注意:索引构建对每个 Chunk 多次调用 LLM,大文档集成本可观
+```
+
+**第 4 步:查询**
+
+```bash
+# 全局查询(总结性问题,走社区摘要)
+graphrag query --root ./graphrag_ws --method global \
+  "这个文档集讨论了哪些主要主题?"
+
+# 局部查询(具体实体/关系问题,走子图检索)
+graphrag query --root ./graphrag_ws --method local \
+  "张三和李四是什么关系?"
+```
+
+**常见坑:**
+- `graphrag index` 失败先看 `./graphrag_ws/logs/`,多为 API Key 或模型名配置错误;
+- 使用第三方 OpenAI 兼容端点时,需在 `settings.yaml` 中设置 `api_base`;
+- 更新文档后需重新 `graphrag index`(或配置增量索引,见官方文档 Update Indexing)。
 
 ### 3.7 GraphRAG 适用场景
 
@@ -686,7 +754,46 @@ RAPTOR 构建树状结构:
 输出
 ```
 
-### 5.5 RAG 变体对比
+### 5.5 LightRAG(轻量 GraphRAG,2024-10)
+
+**出品:** 香港大学(HKUDS),2024-10 开源
+**GitHub:** https://github.com/HKUDS/LightRAG
+**论文:** "LightRAG: Simple and Fast Retrieval-Augmented Generation"(https://arxiv.org/abs/2410.12838)
+
+**定位:** 微软 GraphRAG 的轻量替代。GraphRAG 索引成本极高(全量实体抽取 + 社区摘要,文档一多 Token 账单惊人)且更新困难;LightRAG 用"图结构 + 向量检索"双层检索机制,以低得多的成本获得大部分图谱收益,是 2025 年工程落地的常见选择。
+
+| 维度 | Microsoft GraphRAG | LightRAG |
+|------|-------------------|----------|
+| **索引成本** | 极高(多轮 LLM 抽取+社区摘要) | 低(一次实体/关系抽取,无社区摘要) |
+| **检索机制** | 全局(社区摘要)/ 局部(子图)两种模式 | 双层检索:low-level(具体实体)+ high-level(主题概念) |
+| **增量更新** | 困难(图+社区结构需重建) | 原生支持,新文档直接插入 |
+| **全局总结能力** | 强 | 中 |
+| **适用** | 静态大文档集、全局分析 | 持续更新的知识库、生产环境 |
+
+**最小示例:**
+
+```python
+# 依赖:pip install lightrag-hku(需要 LLM API,默认 OpenAI,设 OPENAI_API_KEY)
+import asyncio
+from lightrag import LightRAG, QueryParam
+from lightrag.llm.openai import gpt_4o_mini_complete, openai_embed
+
+rag = LightRAG(
+    working_dir="./lightrag_ws",
+    llm_model_func=gpt_4o_mini_complete,   # 可换任意兼容函数
+    embedding_func=openai_embed,
+)
+
+async def main():
+    await rag.ainsert(["RAG 通过检索外部知识库增强大模型回答能力..."])
+    # 双层检索:hybrid = low-level(实体)+ high-level(主题)
+    answer = await rag.aquery("什么是 RAG?", param=QueryParam(mode="hybrid"))
+    print(answer)
+
+asyncio.run(main())
+```
+
+### 5.6 RAG 变体对比
 
 | 变体 | 核心创新 | 适用场景 | 论文年份 |
 |------|---------|---------|---------|
@@ -694,6 +801,7 @@ RAPTOR 构建树状结构:
 | **Advanced RAG** | 预检索+后检索优化 | 生产环境 | 2023 |
 | **Modular RAG** | 模块化组件 | 复杂业务 | 2024 |
 | **GraphRAG** | 知识图谱+社区 | 多跳推理 | 2024 |
+| **LightRAG** | 轻量图谱+双层检索 | 持续更新的生产知识库 | 2024 |
 | **RAPTOR** | 树状分层 | 长文档总结 | 2024 |
 | **Self-RAG** | 自反思+决策 | 高准确率问答 | 2023 |
 | **CRAG** | 检索质量纠正 | 容错性要求高 | 2024 |
@@ -729,18 +837,21 @@ Embedding Model(如 BGE)
 
 | 模型 | 来源 | 维度 | 特点 | 中文支持 | 开源 |
 |------|------|------|------|---------|------|
+| **Qwen3-Embedding-8B** | 阿里通义 | 4096 | 2025 开源,MTEB 多语言榜榜首(发布时) | 优秀 | ✅ |
+| **Qwen3-Embedding-4B** | 阿里通义 | 2560 | 2025 开源,性能/成本均衡 | 优秀 | ✅ |
+| **Qwen3-Embedding-0.6B** | 阿里通义 | 1024 | 2025 开源,轻量高性价比 | 优秀 | ✅ |
+| **gemini-embedding-001** | Google | 3072 | 2025 API,MTEB 多语言顶级 | 优秀 | ❌ |
 | **text-embedding-3-large** | OpenAI | 3072 | 性能强,API 调用 | 良好 | ❌ |
 | **text-embedding-3-small** | OpenAI | 1536 | 性价比高 | 良好 | ❌ |
-| **text-embedding-ada-002** | OpenAI | 1536 | 经典版本 | 一般 | ❌ |
+| **text-embedding-ada-002** | OpenAI | 1536 | 经典版本(已老旧,新项目不建议) | 一般 | ❌ |
 | **voyage-3** | Voyage AI | 1024 | 2024 新版,性能强 | 良好 | ❌ |
-| **BGE-large-zh-v1.5** | 智源 | 1024 | 中文最佳开源 | 优秀 | ✅ |
-| **BGE-m3** | 智源 | 1024 | 多语言+多功能 | 优秀 | ✅ |
-| **m3e-large** | MoKa AI | 1024 | 中文优秀开源 | 优秀 | ✅ |
-| **gte-large-zh** | 阿里达摩院 | 1024 | 中文优秀 | 优秀 | ✅ |
+| **BGE-m3** | 智源 | 1024 | 多语言+多功能(稠密/稀疏/多向量) | 优秀 | ✅ |
+| **BGE-large-zh-v1.5** | 智源 | 1024 | 中文经典开源(2023),已被 Qwen3-Embedding 等新一代超越 | 优秀 | ✅ |
+| **m3e-large** | MoKa AI | 1024 | 中文开源(2023) | 优秀 | ✅ |
+| **gte-Qwen2-7B-instruct** | 阿里达摩院 | 3584 | 大模型级嵌入 | 优秀 | ✅ |
 | **Cohere embed-v3** | Cohere | 1024 | 多语言 | 良好 | ❌ |
 | **jina-embeddings-v3** | Jina AI | 1024 | 多语言+长文本 | 良好 | ✅ |
-| **E5-mistral-7b** | 微软 | 4096 | 大模型级嵌入 | 良好 | ✅ |
-| **NV-Embed-v2** | NVIDIA | 4096 | MTEB 榜单顶级 | 良好 | ✅ |
+| **NV-Embed-v2** | NVIDIA | 4096 | MTEB 榜单前列 | 良好 | ✅ |
 
 ### 6.4 MTEB 榜单
 
@@ -760,7 +871,8 @@ Embedding Model(如 BGE)
 
 | 场景 | 推荐模型 | 理由 |
 |------|---------|------|
-| **中文为主** | BGE-large-zh-v1.5 / m3e-large | 中文 SOTA |
+| **中文为主(开源)** | Qwen3-Embedding 系列 / BGE-m3 | 2025 年 MTEB 中文/多语言前列,开源可本地部署 |
+| **中文为主(API)** | gemini-embedding-001 | 多语言顶级,API 调用 |
 | **多语言** | BGE-m3 / Cohere embed-v3 | 多语言支持好 |
 | **英文为主** | text-embedding-3-large | OpenAI 性能强 |
 | **本地部署** | BGE-large / m3e-large | 开源、可商用 |
@@ -940,7 +1052,31 @@ chunk_with_context = """
 本节介绍了 RAG 的基本原理...
 """
 
-# 效果:检索失败率降低 49%(单独),67%(配合 BM25)
+# 官方效果(三级口径,检索失败率下降幅度):
+#   Contextual Embedding 单独使用        → ↓ 49%
+#   Contextual Embedding + Contextual BM25 → ↓ 56%
+#   再叠加 Reranker(重排)               → ↓ 67%
+```
+
+**代码实现(生成上下文前缀):**
+
+```python
+def add_context_to_chunk(chunk, document_summary):
+    """用 LLM 为每个块生成上下文前缀"""
+    prompt = f"""<document>
+{document_summary}
+</document>
+Here is the chunk we want to situate within the whole document:
+<chunk>
+{chunk.content}
+</chunk>
+Please give a short succinct context to situate this chunk within the overall document
+for the purposes of improving search retrieval of the chunk.
+Answer only with the succinct context and nothing else."""
+    
+    context = llm.invoke(prompt)
+    chunk.content = f"{context}\n\n{chunk.content}"
+    return chunk
 ```
 
 ---
@@ -969,10 +1105,10 @@ chunk_with_context = """
 
 | 方法 | 公式 | 适用场景 | 取值范围 |
 |------|------|----------|---------|
-| **余弦相似度(Cosine)** | cosθ = A·B / (|A||B|) | 文本相似度(最常用) | [-1, 1] |
+| **余弦相似度(Cosine)** | cosθ = A·B / (\|A\|·\|B\|) | 文本相似度(最常用) | [-1, 1] |
 | **欧氏距离(L2)** | d = √(Σ(aᵢ-bᵢ)²) | 图像、空间数据 | [0, ∞) |
 | **点积(Dot Product)** | A·B = Σaᵢbᵢ | 归一化向量的快速计算 | (-∞, ∞) |
-| **曼哈顿距离(L1)** | d = Σ|aᵢ-bᵢ| | 高维稀疏数据 | [0, ∞) |
+| **曼哈顿距离(L1)** | d = Σ\|aᵢ-bᵢ\| | 高维稀疏数据 | [0, ∞) |
 | **汉明距离** | 不同维度的个数 | 二进制向量 | [0, dim] |
 
 **何时用哪个:**
@@ -1054,6 +1190,8 @@ collection.add(
 results = collection.query(query_texts=["查询"], n_results=3)
 
 # 2. Qdrant(生产级)
+# 先启动服务:docker run -p 6333:6333 qdrant/qdrant
+# 依赖:pip install qdrant-client(示例基于 qdrant-client 1.10+)
 from qdrant_client import QdrantClient
 from qdrant_client.models import Distance, VectorParams, PointStruct
 
@@ -1066,7 +1204,8 @@ client.upsert(
     "docs",
     points=[PointStruct(id=1, vector=[0.1, ...], payload={"text": "..."})]
 )
-results = client.search("docs", query_vector=[0.2, ...], limit=5)
+# qdrant-client 1.10 起 search() 已弃用(1.14 移除),统一改用 query_points()
+results = client.query_points("docs", query=[0.2, ...], limit=5).points
 
 # 3. Milvus(大规模)
 from pymilvus import MilvusClient
@@ -1191,13 +1330,15 @@ model = SentenceTransformer('BAAI/bge-large-zh-v1.5')
 
 # 文档库
 docs = ["猫坐在垫子上", "狗跑在草地上", "Python 是编程语言"]
-doc_vectors = model.encode(docs)
+doc_vectors = model.encode(docs, normalize_embeddings=True)  # L2 归一化!
 
 # 查询
 query = "小猫趴在哪?"
-query_vector = model.encode([query])
+query_vector = model.encode([query], normalize_embeddings=True)
 
-# 余弦相似度
+# 归一化后,点积 = 余弦相似度
+# ⚠️ BGE 默认不归一化,若省略 normalize_embeddings=True,
+#    np.dot 得到的是裸点积而非余弦相似度,长文本会被系统性高估
 scores = np.dot(query_vector, doc_vectors.T)
 # scores: [[0.85, 0.32, 0.15]] → 第 0 个文档最相关
 ```
@@ -1248,7 +1389,7 @@ scores = np.dot(query_vector, doc_vectors.T)
 | **加权平均** | 给两个相似度分数加权平均 | score = α·s_vec + (1-α)·s_bm25 |
 | **convex combination** | 凸组合,保证和为 1 | score = α·s_vec + (1-α)·s_bm25,α∈[0,1] |
 | **concat** | 简单拼接两个结果列表 | 无融合,靠重排 |
-| ** Learned Fusion** | 学习权重 | 训练一个小模型 |
+| **Learned Fusion** | 学习权重 | 训练一个小模型 |
 
 **RRF 公式(最常用):**
 ```
@@ -1323,9 +1464,12 @@ results = ensemble_retriever.invoke("查询")
 
 | 模型 | 来源 | 特点 | 开源 |
 |------|------|------|------|
+| **Qwen3-Reranker-8B** | 阿里通义 | 2025 开源 reranker 事实标准,MTEB-R/CMTEB-R 榜首 | ✅ |
+| **Qwen3-Reranker-4B** | 阿里通义 | 2025 开源,性能/成本均衡 | ✅ |
+| **Qwen3-Reranker-0.6B** | 阿里通义 | 2025 开源,轻量低延迟 | ✅ |
 | **bge-reranker-v2-m3** | 智源 | 多语言,中文优秀 | ✅ |
-| **bge-reranker-large** | 智源 | 中文优秀 | ✅ |
-| **Cohere Rerank 3** | Cohere | 商用 API,性能强 | ❌ |
+| **bge-reranker-large** | 智源 | 中文优秀(2023 经典) | ✅ |
+| **Cohere Rerank 3.5** | Cohere | 商用 API,性能强 | ❌ |
 | **Jina Reranker v2** | Jina | 多语言 | ✅ |
 | **Voyage Rerank-2** | Voyage AI | 商用顶级 | ❌ |
 | **ColBERT v2** | 开源 | 延迟交互,精度高 | ✅ |
@@ -1358,12 +1502,7 @@ results = compression_retriever.invoke("查询")
 
 ### 11.6 重排效果
 
-Anthropic 在 Contextual Retrieval 文档中报告:
-- 朴素 RAG:基准
-- + Contextual Retrieval:失败率 ↓ 49%
-- + BM25 混合检索:失败率 ↓ 56%
-- + Reranker:失败率 ↓ 67%
-- + Contextual + BM25 + Reranker:失败率 ↓ 67%
+Anthropic 在 Contextual Retrieval 文档中报告的三级效果口径(检索失败率下降):Contextual Embedding ↓49% → +Contextual BM25 ↓56% → 再 +Reranker ↓67%。详细方法与代码见本章 **7.10 Contextual Retrieval** 节,此处不再重复。
 
 ---
 
@@ -1712,6 +1851,38 @@ PDF 是 RAG 中最难的格式之一:
 | **扫描件** | 图片型 PDF | OCR |
 | **页眉页脚** | 干扰内容 | 清洗过滤 |
 
+### 15.2.1 新一代 PDF 解析工具:MinerU / Docling / ColPali(2024-2025)
+
+PDF 解析是当前 RAG 工程最大的痛点之一。2024-2025 年三个主流新工具基本取代了"PyPDF 硬抽 + 手工清洗"的旧路线:
+
+| 工具 | 出品方 | 核心能力 | 适用 |
+|------|--------|---------|------|
+| **MinerU** | 上海 AI Lab(OpenDataLab) | 版面分析 + OCR + 表格/公式识别,PDF → 结构化 Markdown,中文文档表现出色 | 学术/财报/扫描件等复杂中文 PDF |
+| **Docling** | IBM | PDF/DOCX/PPTX/HTML 统一解析为结构化文档(含表格结构、阅读顺序),原生对接 LangChain/LlamaIndex | 企业多格式文档管道 |
+| **ColPali** | 法国 illuin-tech(VIDORE) | **多模态版面 RAG**:不解析文字,直接把 PDF 页面当图片做向量化检索,彻底绕开解析难题 | 版面复杂、图表密集的文档 |
+
+**链接:**
+- MinerU:https://github.com/opendatalab/MinerU
+- Docling:https://github.com/docling-project/docling
+- ColPali:https://github.com/illuin-tech/colpali
+
+**最小示例(Docling):**
+
+```python
+# 依赖:pip install docling
+from docling.document_converter import DocumentConverter
+
+converter = DocumentConverter()
+result = converter.convert("report.pdf")      # PDF/DOCX/PPTX/HTML 均可
+markdown = result.document.export_to_markdown()  # 保留标题层级、表格结构
+# 得到的 Markdown 直接喂给分块器,版面顺序和表格都是对的
+```
+
+**选型建议:**
+- 中文复杂 PDF(扫描件/双栏/公式)→ **MinerU**;
+- 多格式统一管道、要接 LangChain/LlamaIndex → **Docling**;
+- 解析怎么都做不干净(图表即信息)→ **ColPali** 多模态路线,用视觉嵌入检索页面截图,交给多模态 LLM 生成。
+
 ### 15.3 文档处理流程
 
 ```
@@ -1748,6 +1919,12 @@ print(response)
 ---
 
 ## 十六、RAG 完整代码示例(生产级)
+
+> **环境与依赖(运行前必读):**
+> - 示例基于 **LangChain 0.3.x** 的 import 路径;LangChain 1.0(2025-10 发布)重构了包结构(如 `langchain.retrievers` 等路径有变动),新版本请对照官方迁移指南调整
+> - 安装:`pip install langchain==0.3.* langchain-community langchain-openai langchain-cohere langchain-huggingface langchain-text-splitters rank_bm25 chromadb pypdf sentence-transformers`
+> - 需要环境变量:`OPENAI_API_KEY`(LLM 生成)与 `COHERE_API_KEY`(Cohere 重排,https://dashboard.cohere.com/ 申请,有免费额度)
+> - 无 API Key 的纯本地版本见 1.7 节
 
 ```python
 """
@@ -2079,7 +2256,7 @@ Long Context RAG:Top-50 文档(塞入 200K 上下文)
     ├── Hybrid Search(向量+BM25)
     ├── BGE Reranker 重排
     └── Claude/GPT 生成 + 引用标注
-[效果] 准确率 85%+,响应 < 2s
+[效果] 准确率 85%+,响应 < 2s(示例估算,非实测基准;实际指标需按你的知识库与评估集实测)
 ```
 
 ### 21.2 客服系统
@@ -2093,7 +2270,7 @@ Long Context RAG:Top-50 文档(塞入 200K 上下文)
     ├── 检索 FAQ + 相似工单
     ├── LLM 生成回答 + 推荐人工
     └── 失败转人工
-[效果] 60% 问题自动解决
+[效果] 60% 问题自动解决(示例估算,非实测基准;不同业务差异极大,需用真实工单回流评估)
 ```
 
 ### 21.3 代码库问答
@@ -2132,6 +2309,20 @@ Long Context RAG:Top-50 文档(塞入 200K 上下文)
     └── 引用生成
 [效果] 支持跨论文综述
 ```
+
+### 21.6 RAG 生产运维(上线后才开始的坑)
+
+原型跑通只是开始,生产环境的核心难点在**运维一致性**:
+
+| 运维问题 | 说明 | 对策 |
+|----------|------|------|
+| **增量更新** | 新文档不能全量重建(成本/停机),要支持追加索引 | 向量库原生支持 upsert;文档级 content hash 判断是否变更,只重处理变化的文档 |
+| **文档删除一致性** | 源文档删除后,向量库、BM25 索引、缓存中的残留都要清,否则"已删除的知识还在被引用"(合规风险) | 以文档 ID 为主键贯穿所有索引;删除走统一入口,级联清理各索引与缓存 |
+| **Embedding 模型升级** | 换 Embedding 模型(或模型版本升级)后,新旧向量**不可比**,必须全量重建索引 | 双索引蓝绿切换:新索引建好后切流量;升级前用评估集对比新旧检索质量 |
+| **Chunk 策略变更** | 改 chunk_size/分块逻辑同样需全量重建 | 与 Embedding 升级同一套蓝绿流程 |
+| **检索质量回归** | 知识库增长后召回质量可能悄悄退化 | 固定评估集定期跑 Hit@K / RAGAS,纳入 CI 或定时任务 |
+| **热点查询缓存** | 高频重复查询重复计费 | 查询级缓存(含语义缓存,如 GPTCache),注意文档更新后缓存失效 |
+| **多租户隔离** | 不同客户数据不能串 | 按 tenant_id 元数据过滤 + 独立 collection 双保险,过滤逻辑做单测 |
 
 ---
 

@@ -45,19 +45,19 @@
 | 序号 | 文档 | 内容定位 | 关键词 | 优先级 | 行数 |
 |------|------|----------|--------|--------|------|
 | 00 | `README.md` | 本文件 - 总览索引与学习路径 | 索引/路径/词汇 | 必读 | 本文件 |
-| 01 | `01-交互入口.md` | CLI / WebUI / Widget / Copilot / Chatbot / ASR / TTS | 7 大入口 | 基础 | ~1100 |
-| 02 | `02-智能体通信协议.md` | MCP / A2A / 消息队列 / Handoff 任务移交 | MCP/A2A | 核心 | ~1800 |
-| 03 | `03-智能体主体.md` | Agent / Multi-Agent / Sub-agent / Role / 框架对比 | Agent 形态 | 核心 | ~1200 |
-| 04 | `04-能力与约束体系.md` | skill / CLAUDE.md / Rules / Hooks / 工具调用 / 沙箱 | 能力/约束 | 核心 | ~1100 |
-| 05 | `05-任务流程编排.md` | Workflow / Orchestrator / Plan / Scheduler / 反馈闭环 | 编排/调度 | 核心 | ~1850 |
-| 06 | `06-提示与推理逻辑.md` | Prompt / CoT / Reflection / Grounding / 提示工程 | 提示/推理 | 基础 | ~1560 |
-| 07 | `07-记忆会话状态.md` | Memory / Session / State / 状态机 / Scratchpad | 记忆/状态 | 基础 | ~1500 |
-| 08 | `08-RAG知识库体系.md` | RAG / GraphRAG / RAPTOR / VectorDB / 混合检索 | 检索增强 | 重要 | ~2240 |
-| 09 | `09-底层大模型底座.md` | LLM / MoE / LoRA / RLHF / Tokenizer / 量化 | 模型基础 | 重要 | ~1630 |
-| 10 | `10-部署网关运维.md` | vLLM / TGI / Ollama / OneAPI / 监控 / 限流 | 工程化 | 实战 | ~2760 |
-| 11 | `11-安全对齐评估.md` | Evaluation / Hallucination / Alignment / Guardrails | 安全/评估 | 进阶 | ~2250 |
+| 01 | `01-交互入口.md` | CLI / WebUI / Widget / Copilot / Chatbot / ASR / TTS / Realtime | 7 大入口 | 基础 | ~1230 |
+| 02 | `02-智能体通信协议.md` | MCP / A2A / Registry / 消息队列 / Handoff 任务移交 | MCP/A2A | 核心 | ~1940 |
+| 03 | `03-智能体主体.md` | Agent / Multi-Agent / Sub-agent / ADK / 框架对比 | Agent 形态 | 核心 | ~1370 |
+| 04 | `04-能力与约束体系.md` | skill / CLAUDE.md / Rules / Hooks / 工具调用 / 沙箱 | 能力/约束 | 核心 | ~1230 |
+| 05 | `05-任务流程编排.md` | Workflow / Orchestrator / Plan / Durable Execution / HITL | 编排/调度 | 核心 | ~2120 |
+| 06 | `06-提示与推理逻辑.md` | Prompt / CoT / Structured Output / 推理模型 / 提示评估 | 提示/推理 | 基础 | ~1820 |
+| 07 | `07-记忆会话状态.md` | Memory / Session / State / Mem0 / LangGraph Store | 记忆/状态 | 基础 | ~1720 |
+| 08 | `08-RAG知识库体系.md` | RAG / GraphRAG / LightRAG / VectorDB / 混合检索 | 检索增强 | 重要 | ~2430 |
+| 09 | `09-底层大模型底座.md` | LLM / MoE / LoRA / GRPO / 推理模型 / 量化 | 模型基础 | 重要 | ~1860 |
+| 10 | `10-部署网关运维.md` | vLLM / P/D 分离 / Ollama / OneAPI / 监控 / 故障 Runbook | 工程化 | 实战 | ~2980 |
+| 11 | `11-安全对齐评估.md` | Evaluation / GRPO / RLVR / Alignment / Guardrails | 安全/评估 | 进阶 | ~2460 |
 
-> 全套合计 **~19,000 行** Markdown,涵盖 **550+ 专业术语**、**200+ 图表/表格**、**100+ 代码示例**。
+> 全套合计 **~22,400 行** Markdown,涵盖 **390+ 速查术语**、**470+ 表格/图示**、**550+ 代码/命令/配置示例块**。
 
 ---
 
@@ -120,7 +120,7 @@
 
 ## 三、11 大类一句话定位与深度内容
 
-> 每章开头都有 50 个术语速查表(中英文对照 + 一句话解释),正文中所有专业词汇均有解释。
+> 每章开头都有术语速查表(21~50 条,中英文对照 + 一句话解释),正文中所有专业词汇均有解释。
 
 ### 1. **交互入口(01)** — 用户与 AI 系统的接触面
 
@@ -926,7 +926,7 @@
 |------|------|------|
 | **Building Effective Agents** | Anthropic | https://www.anthropic.com/research/building-effective-agents |
 | **构建智能体实践指南** | OpenAI | https://cdn.openai.com/business-guides-and-resources/a-practical-guide-to-building-agents.pdf |
-| **NSA MCP 安全白皮书** | NSA | https://media.defense.gov/2026/Jun/02/2003943289/-1/-1/0/CSI_MCP_SECURITY.PDF |
+| **NSA MCP 安全指南(2026-05)** | NSA AISC | https://www.nsa.gov/Press-Room/Press-Releases-Statements/Press-Release-View/Article/4496698/nsa-releases-security-design-considerations-for-ai-driven-automation-leveraging/ |
 | **Effective Context Engineering** | Anthropic | https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents |
 | **Multi-Agent Orchestration** | OpenAI | https://openai.com/index/new-tools-for-building-agents/ |
 
@@ -1173,11 +1173,11 @@
 
 | 技术/规范 | 版本/日期 | 说明 |
 |----------|----------|------|
-| **MCP 规范** | 2025-06-18(现行) | Streamable HTTP、Elicitation、Tasks 原语 |
-| **MCP 规范** | 2026-07-28 RC | 无状态化、OAuth 2.1 强制 |
-| **A2A 协议** | 2025-04-10 | Google Cloud Next 发布 |
-| **Codex CLI** | v0.138.0+ | 11 大终端工作流 |
-| **Claude Code** | v2.1.198+ | 内置 Explore/Plan/General-purpose 三种 Subagent |
+| **MCP 规范** | 2025-11-25(现行) | Tasks 原语(实验性)、URL 模式 Elicitation、CIMD、OIDC Discovery |
+| **MCP 规范** | 2025-03-26 / 2025-06-18 | Streamable HTTP + OAuth 2.1(03-26);structuredContent、Elicitation(06-18) |
+| **A2A 协议** | 2025-04 发布;1.0(2026) | Google 发起,Linux Foundation 托管 |
+| **Codex CLI** | 持续更新(以官方 release 为准) | approval_policy × sandbox_mode 审批模型 |
+| **Claude Code** | 持续更新(以官方 release 为准) | 内置 Explore/Plan/General-purpose 三种 Subagent |
 | **OpenAI Agents SDK** | - | 三原语(Agents / Handoffs / Guardrails)+ Tracing |
 | **AGENTS.md** | - | 60k+ 项目采用 |
 | **主流框架** | - | LangGraph / CrewAI / DSPy / LlamaIndex |
@@ -1194,21 +1194,50 @@
 
 | 章节 | 行数 | 术语数 | 图表数 | 代码示例 | 状态 |
 |------|------|--------|--------|---------|------|
-| 00 README | 本文件 | 200+ | 6 | 0 | ✅ 已迭代 |
-| 01 交互入口 | ~1100 | 22 | 15+ | 20+ | ✅ 已迭代 |
-| 02 通信协议 | ~1800 | 50 | 30+ | 30+ | ✅ 已迭代 |
-| 03 智能体主体 | ~1200 | 50 | 20+ | 15+ | ✅ 已迭代 |
-| 04 能力与约束 | ~1100 | 50 | 15+ | 20+ | ✅ 已迭代 |
-| 05 任务编排 | ~1850 | 50 | 25+ | 25+ | ✅ 已迭代 |
-| 06 提示推理 | ~1560 | 50 | 20+ | 20+ | ✅ 已迭代 |
-| 07 记忆状态 | ~1500 | 50 | 20+ | 15+ | ✅ 已迭代 |
-| 08 RAG 体系 | ~2240 | 50 | 30+ | 30+ | ✅ 已迭代 |
-| 09 模型底座 | ~1630 | 50 | 25+ | 20+ | ✅ 已迭代 |
-| 10 部署运维 | ~2760 | 50 | 35+ | 40+ | ✅ 已迭代 |
-| 11 安全评估 | ~2250 | 50 | 30+ | 25+ | ✅ 已迭代 |
-| **合计** | **~19,000** | **550+** | **200+** | **100+** | ✅ |
+| 00 README | 本文件 | - | 6 | 0 | ✅ v4 |
+| 01 交互入口 | ~1230 | 21 | 15+ | 25+ | ✅ v4 |
+| 02 通信协议 | ~1940 | 30 | 30+ | 35+ | ✅ v4 |
+| 03 智能体主体 | ~1370 | 30 | 20+ | 20+ | ✅ v4 |
+| 04 能力与约束 | ~1230 | 30 | 15+ | 25+ | ✅ v4 |
+| 05 任务编排 | ~2120 | 30 | 25+ | 30+ | ✅ v4 |
+| 06 提示推理 | ~1820 | 30 | 20+ | 25+ | ✅ v4 |
+| 07 记忆状态 | ~1720 | 30 | 20+ | 20+ | ✅ v4 |
+| 08 RAG 体系 | ~2430 | 40 | 30+ | 35+ | ✅ v4 |
+| 09 模型底座 | ~1860 | 50 | 25+ | 25+ | ✅ v4 |
+| 10 部署运维 | ~2980 | 50 | 35+ | 45+ | ✅ v4 |
+| 11 安全评估 | ~2460 | 50 | 30+ | 30+ | ✅ v4 |
+| **合计** | **~22,400** | **391(速查表)** | **470+ 表格** | **550+ 代码块** | ✅ |
 
 ### 15.2 版本日志
+
+#### v4.0(2026-07 查缺补漏 + 实战化迭代)
+
+**硬错误修复(70+ 处,读者照抄即报错/被误导的内容):**
+- ✅ 02:MCP 版本表修正(Streamable HTTP 属 2025-03-26、structuredContent 属 2025-06-18、Tasks 属 2025-11-25);删除无法核实的"2026-07-28 RC";MCP server 启动代码、官方 Server 表、A2A 新版 API(message/send、contextId、agent-card.json)全部修正
+- ✅ 01/04:Claude Code 权限模式、Hooks 三层嵌套配置与 stdin JSON 输入、SKILL.md 官方字段、Codex `approval_policy`/`sandbox_mode` 等"照抄即报错"配置全部按官方文档重写
+- ✅ 03/05:OpenAI Agents SDK Guardrails、Anthropic 工具 schema、Airflow schedule、拼写错误(`anthropropic`)等代码错误修复;五处"官方示例"误导性归因改为"按官方思想改写"
+- ✅ 08:GraphRAG 编造 API 改为官方 CLI 流程;Contextual Retrieval 数字统一为 49%→56%→67%;qdrant `query_points` 新 API
+- ✅ 09/10:KV Cache 计算修正(GQA 口径,8B 模型 32k 上下文 ≈4.3GB);PagedAttention 统一为 arXiv 2309.06180;vLLM 多机部署改 Ray 集群正确流程;Prompt Caching 计费修正(写 1.25× / 读 0.1×);llama.cpp cmake 编译流
+- ✅ 11:Llama Guard 判定逻辑、Prompt Guard 分类用法、τ-bench arXiv 号、假 DP-SGD 改 Opacus;NSA MCP 安全指南核实为真实文件并换官方链接
+- ✅ 全库:chat.lmsys.org → lmarena.ai;不存在的型号(Llama 4 70B/8B)、张冠李戴的论文引用逐一修正
+
+**实战化增补(每章新增可直接动手的内容):**
+- ✅ 01:CLI 上手 checklist(安装→登录→最小任务→恢复会话);Realtime API / Gemini Live 端到端语音新节;faster-whisper CPU 示例
+- ✅ 02:MCP 四步实战(FastMCP + Inspector + claude mcp add + Windows 踩坑);MCP Registry;A2A 1.0 迁移
+- ✅ 03:Google ADK、Claude Agent SDK 入对比;各框架"安装 + 已验证版本"行
+- ✅ 04:五分钟 Hooks 实战(exit 2 阻断 + 验证步骤);Cursor MDC 完整示例;SessionStart/PreCompact 事件
+- ✅ 05:完整可运行 Agent Loop 脚本;Durable Execution(Temporal)与 LangGraph interrupt HITL 新章;GitHub Actions cron UTC 提醒
+- ✅ 06:Structured Output 三家示例;推理模型提示差异对照表;Extended Thinking;promptfoo 最小配置
+- ✅ 07:Mem0/Letta/Zep 选型对比;LangGraph Store;Context Engineering;带记忆对话 Agent 端到端示例
+- ✅ 08:零成本混合检索 RAG(BM25+Chroma+BGE,无需 API key);LightRAG;MinerU/Docling/ColPali;Qwen3-Embedding/Reranker;RAG 生产运维
+- ✅ 09:推理模型与 test-time compute;Chat Template 实务;TRL SFT/DPO 最小实操
+- ✅ 10:P/D 分离(llm-d/Dynamo/LMCache);vLLM V1;国内实践(hf-mirror/ModelScope/gated 401);故障 Runbook
+- ✅ 11:GRPO/RLVR 与推理模型对齐;HLE/SimpleQA/AIME/SWE-bench Verified 新基准;《人工智能生成合成内容标识办法》;garak/PyRIT 可跑命令
+
+**口径修正:**
+- ✅ 术语速查表条目数按实际统计(21~50 条/章,合计 391),不再声称"每章 50 条"
+- ✅ 总行数 ~19,000 → ~22,400(+2,200 行实战内容)
+- ✅ 无法核实的精确版本号统一降级为"以官方 release 为准"
 
 #### v2.0(2026-07 重构 + 深度迭代)
 
@@ -1261,6 +1290,6 @@
 
 **📌 反馈与改进:** 如发现错误、过时内容或建议新增,请直接修改对应章节的 Markdown 文件。
 
-**📅 最后更新:** 2026-07-19
-**📊 文档版本:** v2.0
+**📅 最后更新:** 2026-07-22
+**📊 文档版本:** v4.0
 **👤 维护者:** 学习者本人
