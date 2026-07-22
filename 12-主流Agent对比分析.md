@@ -588,7 +588,18 @@ Lovable/Bolt.new/v0            git 导出             Claude Code/Codex/Cursor
 
 **Genspark** — 以 Agent 驱动的搜索/内容工作区见长,把搜索结果组织成结构化的成果页(Sparkpage),适合快速建立对陌生主题的第一认知。与其他几家的差异在于"成果的可读性与结构化";深度操作能力非其主打,以官网为准。
 
-### 3.3 形态差异与选型要点
+### 3.3 自托管个人 Agent:小龙虾与爱马仕(→ 详见 13 章)
+
+2026 年上半年,通用 Agent 里长出了一个独立的爆款子品类——**自托管个人常驻 Agent**:跑在你自己的电脑/VPS 上、通过聊天软件指挥、7×24 小时待命的"私人 AI 管家"。两个代表:
+
+| 产品 | 花名 | 一句话 | GitHub 热度(报道口径) |
+|------|------|--------|----------------------|
+| **OpenClaw** | 🦞 小龙虾 | 本地优先、白盒可控的"数字执行官"(TypeScript,MIT) | 约 28 万(2026-03 报道) |
+| **Hermes Agent** | 🐎 爱马仕 | 会自我进化的私人 AI(学习循环自动沉淀 Skill,Python,MIT) | 6.6 万+(2026-04 报道) |
+
+两者均为 MIT 开源、免费自部署,掀起过"养虾/养马"的社区热潮(甚至催生出代安装产业链)。**架构解读、正面对比、部署实战与安全风险,详见本书第 13 章《自托管个人 Agent:OpenClaw 与 Hermes Agent》。**
+
+### 3.4 形态差异与选型要点
 
 **与编程 Agent 的三个本质区别:**
 
@@ -808,6 +819,8 @@ CrewAI / Pydantic AI        ──►   LangGraph / MS Agent Framework
    │
 2026
  ├─ 价格雪崩:Devin 从 $500/月降到 $20 起 + 用量计费 —— 后台 agent 商品化
+ ├─ 自托管出圈:2026-01 OpenClaw(🦞 小龙虾)定名爆火,2026-02 Hermes Agent
+ │              (🐎 爱马仕)开源两月揽 6 万+ star —— 个人常驻 Agent 成独立品类(见 13 章)
  ├─ 并购整合:Codeium ──► Windsurf ──► 并入 Cognition 成为 Devin Desktop
  │            Cursor 收购 Continue
  │            Gemini Code Assist 个人档 2026-06 停售(谷歌收敛产品线)
@@ -869,6 +882,7 @@ Q1:你要的是什么?
  │
  ├─ 让 AI 帮我写/改代码 ──────────────► 继续 Q2
  ├─ 让 AI 帮我办杂事(研究/办公) ──────► 通用 Agent(第三节):ChatGPT Agent / Manus / Kimi
+ │                                       要 7×24 私人助手、数据不出本机 ──► 自托管(13 章):OpenClaw / Hermes Agent
  ├─ 把 Agent 嵌进自己的产品 ──────────► 开发框架(第四节):LangGraph / 厂商 SDK
  └─ 全公司统一管理一堆 Agent ─────────► 托管平台(第五节):按现有云/办公生态选
 
@@ -901,6 +915,7 @@ Q4:合规约束?
 | 异步批量工单 | **Jules** 或 **Devin** | 前者免费档 15 任务/天起步;后者多 Agent 指挥中心 + 全 VM 沙箱 |
 | 受监管行业 | **Tabnine** 或 **Factory Droids** | 私有化/气隙部署与合规叙事是核心卖点 |
 | 要自建 Agent | **LangGraph**(durable 生产)或**厂商 SDK**(OpenAI Agents SDK / Claude Agent SDK) | 不能挂的生产选前者;快速绑定某家模型能力选后者 |
+| 7×24 私人助手、数据不出本机 | **OpenClaw** 或 **Hermes Agent**(详见 13 章) | 自托管品类双雄:要白盒可控选小龙虾,要自进化省心选爱马仕 |
 | .NET 技术栈 | **Microsoft Agent Framework** | C# 一等公民,六家模型商,OTel 内置 |
 | RAG 密集型 Agent | **LlamaIndex Workflows** | 检索/索引一等公民,与 08 章体系衔接 |
 
