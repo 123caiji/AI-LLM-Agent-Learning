@@ -1,6 +1,6 @@
 # AI / LLM / Agent 全栈深度学习资源索引
 
-> 按 11 大类系统组织 AI 全栈知识:**交互入口 → 通信协议 → 智能体主体 → 能力约束 → 任务编排 → 提示推理 → 记忆状态 → RAG 知识库 → 模型底座 → 部署运维 → 安全评估**。所有内容已对照 2026 年最新官方文档与社区实践整理。本 README 是整个知识体系的"地图 + 索引 + 学习指南",看完它你就能找到任何 AI 工程化概念的位置。
+> 按 11 大类系统组织 AI 全栈知识:**交互入口 → 通信协议 → 智能体主体 → 能力约束 → 任务编排 → 提示推理 → 记忆状态 → RAG 知识库 → 模型底座 → 部署运维 → 安全评估**,另加**专题篇《12-主流Agent对比分析》**(2026-07 市场产品/框架/平台选型对比,含三张自绘对比图)。所有内容已对照 2026 年最新官方文档与社区实践整理。本 README 是整个知识体系的"地图 + 索引 + 学习指南",看完它你就能找到任何 AI 工程化概念的位置。
 
 ---
 
@@ -22,9 +22,9 @@
 
 ## 📑 目录
 
-- [📁 一、文档结构总览(11 大类 + README)](#一文档结构总览11-大类--readme)
+- [📁 一、文档结构总览(11 大类 + 1 专题 + README)](#一文档结构总览11-大类--1-专题--readme)
 - [🗺️ 二、知识体系架构图](#二知识体系架构图)
-- [📖 三、11 大类一句话定位与深度内容](#三11-大类一句话定位与深度内容)
+- [📖 三、11 大类 + 1 专题一句话定位与深度内容](#三11-大类--1-专题一句话定位与深度内容)
 - [🚀 四、推荐学习路径(4 种顺序)](#四推荐学习路径4-种顺序)
 - [📚 五、全局专业词汇索引(A-Z)](#五全局专业词汇索引a-z)
 - [🏷️ 六、技术栈全景图](#六技术栈全景图)
@@ -40,7 +40,7 @@
 
 ---
 
-## 一、文档结构总览(11 大类 + README)
+## 一、文档结构总览(11 大类 + 1 专题 + README)
 
 | 序号 | 文档 | 内容定位 | 关键词 | 优先级 | 行数 |
 |------|------|----------|--------|--------|------|
@@ -56,8 +56,9 @@
 | 09 | `09-底层大模型底座.md` | LLM / MoE / LoRA / GRPO / 推理模型 / 量化 | 模型基础 | 重要 | ~1860 |
 | 10 | `10-部署网关运维.md` | vLLM / P/D 分离 / Ollama / OneAPI / 监控 / 故障 Runbook | 工程化 | 实战 | ~2980 |
 | 11 | `11-安全对齐评估.md` | Evaluation / GRPO / RLVR / Alignment / Guardrails | 安全/评估 | 进阶 | ~2460 |
+| 12 | `12-主流Agent对比分析.md` | Claude Code / Codex / Cursor / Devin / 框架与平台选型 | 专题·选型 | 实战 | ~1010 |
 
-> 全套合计 **~22,400 行** Markdown,涵盖 **390+ 速查术语**、**470+ 表格/图示**、**550+ 代码/命令/配置示例块**。
+> 全套合计 **~23,400 行** Markdown,涵盖 **410+ 速查术语**、**490+ 表格/图示**、**560+ 代码/命令/配置示例块**。
 
 ---
 
@@ -116,9 +117,11 @@
 | **核心层** | 02 / 03 / 04 / 05 | Agent 主体与协作 | "AI 如何自主行动?" |
 | **应用层** | 01 / 10 / 11 | 用户接入与生产化 | "AI 如何服务和被信任?" |
 
+> 📌 **专题篇:** `12-主流Agent对比分析.md` 不属于四层结构,它是 01/03/05/10 章知识的"市场落点"——2026 年真实产品(Claude Code/Codex/Cursor/Devin 等)、开发框架与企业平台的选型对比,回答"学完原理后该买/用哪个"。
+
 ---
 
-## 三、11 大类一句话定位与深度内容
+## 三、11 大类 + 1 专题一句话定位与深度内容
 
 > 每章开头都有术语速查表(21~50 条,中英文对照 + 一句话解释),正文中所有专业词汇均有解释。
 
@@ -196,6 +199,13 @@
 - **一句话:** AI 工程化的"守门员"。
 - **核心概念:** Evaluation、Benchmark、MMLU、MMLU-Pro、GSM8K、MATH、GPQA、HumanEval、MBPP、SWE-bench、AgentBench、τ-bench、GAIA、LiveBench、LMSYS Arena、Pass@k、Elo Rating、LLM-as-a-Judge、Hallucination、FActScore、TruthfulQA、Alignment、HHH、Constitutional AI、Scalable Oversight、RLHF、RLAIF、Alignment Tax、Guardrails、NeMo Guardrails、Llama Guard、Moderation、OpenAI Moderation API、Perspective API、Prompt Injection、Jailbreak、DAN、Many-shot Jailbreak、OWASP LLM Top 10、PII、Differential Privacy、Federated Learning、Bias、Fairness、Toxicity、Audit、Compliance、Interpretability、Mechanistic Interpretability、Red Team、EU AI Act、生成式 AI 管理办法、NIST AI RMF、ISO 42001
 - **关键问题:** 如何让 AI 安全可控地服务人类?
+
+### 12. **主流 Agent 对比分析(12 · 专题篇)** — 2026 年市场格局与选型决策
+
+- **一句话:** 前面 11 章讲"Agent 怎么造",本章讲"Agent 怎么选"。
+- **核心内容:** 编程 Agent 产品(Claude Code / Codex / Cursor / Copilot / Devin / Jules / Gemini CLI / 开源阵营)、通用 Agent(ChatGPT Agent / Manus / Kimi)、开发框架(LangGraph / CrewAI / OpenAI Agents SDK / Claude Agent SDK / Google ADK / MS Agent Framework / Pydantic AI / LlamaIndex)、企业托管平台(AgentKit / Bedrock AgentCore / Vertex AI / Copilot Studio 等)
+- **特色:** 三张自绘对比图(定位图 / 基准对比 / 框架雷达)+ 四层市场全景 + 决策树 + 场景推荐表
+- **关键问题:** 2026 年我该买/用哪个 Agent?
 
 ---
 
@@ -1206,9 +1216,21 @@
 | 09 模型底座 | ~1860 | 50 | 25+ | 25+ | ✅ v4 |
 | 10 部署运维 | ~2980 | 50 | 35+ | 45+ | ✅ v4 |
 | 11 安全评估 | ~2460 | 50 | 30+ | 30+ | ✅ v4 |
-| **合计** | **~22,400** | **391(速查表)** | **470+ 表格** | **550+ 代码块** | ✅ |
+| 12 Agent 对比(专题) | ~1010 | 20 | 15+(含 3 张自绘图) | 5+ | ✅ v4.1 |
+| **合计** | **~23,400** | **411(速查表)** | **490+ 表格** | **560+ 代码块** | ✅ |
 
 ### 15.2 版本日志
+
+#### v4.1(2026-07-22 新增专题篇)
+
+- ✅ 新增 `12-主流Agent对比分析.md`(~1010 行):2026-07 主流 AI Agent 全景对比与选型指南
+  - 编程 Agent 产品深评:Claude Code / OpenAI Codex / Cursor / GitHub Copilot / Devin(Devin Desktop)/ Google Jules / Gemini CLI / 开源阵营(OpenCode/Aider/Cline 等)
+  - 通用 Agent:ChatGPT Agent / Manus / Kimi 等形态对比
+  - 开发框架对比:LangGraph 1.0 / CrewAI / OpenAI Agents SDK / Claude Agent SDK / Google ADK / Microsoft Agent Framework 1.0 / Pydantic AI V2 / LlamaIndex Workflows 1.0
+  - 企业托管平台速览 + 2024→2026 格局演变 + 选型决策树与场景推荐
+- ✅ 新增 `assets/agent-compare/` 三张自绘对比图(定位散点图 / 基准条形图 / 框架雷达图),matplotlib 生成,CJK 字体
+- ✅ 全部事实(价格/基准/版本)以 2026-07 公开资料核实,文内含数据口径声明
+- ✅ README 索引、统计、学习地图同步更新;后续规划章节号顺延
 
 #### v4.0(2026-07 查缺补漏 + 实战化迭代)
 
@@ -1270,8 +1292,8 @@
 
 ### 15.4 后续规划
 
-- [ ] 增加 12 章:`12-多模态Agent.md`(VLM/ASR/TTS 深度集成)
-- [ ] 增加 13 章:`13-AI产品化.md`(产品/UX/商业模式)
+- [ ] 增加 13 章:`13-多模态Agent.md`(VLM/ASR/TTS 深度集成)
+- [ ] 增加 14 章:`14-AI产品化.md`(产品/UX/商业模式)
 - [ ] 增加更多视频教程链接
 - [ ] 增加 English 版本
 
@@ -1291,5 +1313,5 @@
 **📌 反馈与改进:** 如发现错误、过时内容或建议新增,请直接修改对应章节的 Markdown 文件。
 
 **📅 最后更新:** 2026-07-22
-**📊 文档版本:** v4.0
+**📊 文档版本:** v4.1
 **👤 维护者:** 学习者本人
