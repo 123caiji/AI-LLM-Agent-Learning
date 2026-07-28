@@ -47,7 +47,7 @@
 | 00 | `README.md` | 本文件 - 总览索引与学习路径 | 索引/路径/词汇 | 必读 | 本文件 |
 | 01 | `01-交互入口.md` | CLI / WebUI / Widget / Copilot / Chatbot / ASR / TTS / Realtime | 7 大入口 | 基础 | ~1230 |
 | 02 | `02-智能体通信协议.md` | MCP / A2A / Registry / 消息队列 / Handoff 任务移交 | MCP/A2A | 核心 | ~1940 |
-| 03 | `03-智能体主体.md` | Agent / Multi-Agent / Sub-agent / ADK / 框架对比 | Agent 形态 | 核心 | ~1370 |
+| 03 | `03-智能体主体.md` | Agent / Multi-Agent / Sub-agent / 17 大框架对比(LangGraph/CrewAI/PydanticAI/smolagents/Agno/MetaGPT/AgentScope/PraisonAI 等) | Agent 形态 | 核心 | ~1600 |
 | 04 | `04-能力与约束体系.md` | skill / CLAUDE.md / Rules / Hooks / 工具调用 / 沙箱 | 能力/约束 | 核心 | ~1230 |
 | 05 | `05-任务流程编排.md` | Workflow / Orchestrator / Plan / Durable Execution / HITL | 编排/调度 | 核心 | ~2120 |
 | 06 | `06-提示与推理逻辑.md` | Prompt / CoT / Structured Output / 推理模型 / 提示评估 | 提示/推理 | 基础 | ~1820 |
@@ -61,7 +61,7 @@
 | 14 | `14-多模态Agent.md` | VLM / GUI 操作 / Computer Use / 语音端到端 / 多模态安全 | 专题·多模态 | 基础 | ~1010 |
 | 15 | `15-构建自己的Agent全流程.md` | 九阶段生命周期 / 框架选型 / 架构设计 / 手写 vs LangGraph 双版本实战 / 安全部署 | 专题·实战 | 实战 | ~1138 |
 
-> 全套合计 **~25,700 行** Markdown,涵盖 **500+ 速查术语**、**550+ 表格/图示**、**600+ 代码/命令/配置示例块**。
+> 全套合计 **~25,930 行** Markdown,涵盖 **510+ 速查术语**、**560+ 表格/图示**、**610+ 代码/命令/配置示例块**。
 
 ---
 
@@ -326,6 +326,8 @@
 | AgentSkills.io | 技能标准 | 04 | Skill 的开放标准与目录网站 |
 | Agentic | 智能体化 | 01 | 具备自主决策、工具调用能力的特性 |
 | Agentic AI | 智能体 AI | 03 | 强调 AI 系统的自主行动能力 |
+| Agentic RL | 智能体强化学习 | 03 | 用 RL 训练 Agent 模型本身(AgentScope) |
+| AgentOS | Agent 操作系统 | 03 | Agno 的运行时+控制面,提供 API/UI/RBAC |
 | Alignment | 对齐 | 11 | 让 AI 行为与人类意图/价值观一致 |
 | Alignment Tax | 对齐税 | 11 | 为安全牺牲部分能力 |
 | ALiBi | ALiBi 位置编码 | 09 | Attention with Linear Biases 位置编码 |
@@ -364,6 +366,7 @@
 | CLI | 命令行接口 | 01 | 通过文本命令与系统交互的终端界面 |
 | CLAUDE.md | Claude 项目规则 | 04 | Claude Code 启动时自动加载的项目规则 |
 | Code Interpreter | 代码解释器 | 04 | 沙箱中执行代码的工具 |
+| Code Agent | 代码智能体 | 03 | LLM 直接生成代码作为动作(smolagents) |
 | Cold Start | 冷启动 | 10 | 模型加载过程,延迟高 |
 | Compliance | 合规 | 11 | 符合法规和标准 |
 | Continuous Batching | 连续批处理 | 10 | 动态加入/移除请求的批处理方式 |
@@ -529,12 +532,14 @@
 | Metadata | 元数据 | 08 | 附加在向量上的结构化数据 |
 | Metrics | 指标 | 10 | 可量化的运行数据 |
 | MindIE | MindIE | 10 | 华为昇腾 NPU 推理引擎 |
+| Model Router | 模型路由器 | 03 | 自动路由到最便宜可胜任的模型(PraisonAI) |
 | MLC-LLM | MLC-LLM | 10 | TVM Team 的跨平台 LLM |
 | MMLU | MMLU | 11 | Massive Multitask Language Understanding |
 | MMLU-Pro | MMLU-Pro | 11 | MMLU 升级版,10 选 1 |
 | MMM | 多模态模型 | 09 | Multi-Modal Model |
 | Moderation | 内容审核 | 11 | 对输入输出做安全审查 |
 | Monitor | 监控 | 10 | 持续观察系统状态 |
+| MsgHub | 消息中心 | 03 | AgentScope 多 Agent 对话管理器,支持动态增删 |
 | MoE | 混合专家模型 | 09 | Mixture of Experts |
 | MQA | 多查询注意力 | 09 | Multi-Query Attention |
 | MLA | 多头潜在注意力 | 09 | Multi-head Latent Attention |
@@ -667,8 +672,10 @@
 | State Machine | 状态机 | 07 | 显式状态转移模型 |
 | StateGraph | 状态图 | 03 | LangGraph 中用图结构表示的状态机 |
 | Stop Sequence | 停止序列 | 06 | 遇到该字符串时停止生成 |
+| SOP | 标准作业程序 | 03 | MetaGPT 用 SOP 约束多 Agent 协作流程 |
 | Streamable HTTP | 流式 HTTP | 02 | 远程 Server 传输方式 |
 | Streaming | 流式输出 | 01/09 | 边生成边输出,实时显示 |
+| Structured Output | 结构化输出 | 03 | Agent 返回符合 Schema 的输出,自动验证(PydanticAI) |
 | STT | 语音转文字 | 01 | 同 ASR |
 | Subagent | 子智能体 | 03 | 主 Agent 委派任务的专用 Agent |
 | Summarization | 摘要压缩 | 07 | 对早期消息做摘要 |
@@ -1231,7 +1238,7 @@
 | 00 README | 本文件 | - | 6 | 0 | ✅ v4 |
 | 01 交互入口 | ~1230 | 21 | 15+ | 25+ | ✅ v4 |
 | 02 通信协议 | ~1940 | 30 | 30+ | 35+ | ✅ v4 |
-| 03 智能体主体 | ~1370 | 30 | 20+ | 20+ | ✅ v4 |
+| 03 智能体主体 | ~1600 | 40 | 30+(含 2 张自绘图) | 30+ | ✅ v4.5 |
 | 04 能力与约束 | ~1230 | 30 | 15+ | 25+ | ✅ v4 |
 | 05 任务编排 | ~2120 | 30 | 25+ | 30+ | ✅ v4 |
 | 06 提示推理 | ~1820 | 30 | 20+ | 25+ | ✅ v4 |
@@ -1244,9 +1251,26 @@
 | 13 自托管 Agent(专题) | ~810 | 18 | 27(含 2 张自绘图) | 10+ | ✅ v4.2 |
 | 14 多模态 Agent(专题) | ~1010 | 39 | 30+ | 4(完整示例) | ✅ v4.3 |
 | 15 构建自己的Agent(专题) | ~1138 | 45 | 40+ | 10+(双版本完整代码) | ✅ v4.4 |
-| **合计** | **~25,700** | **513(速查表)** | **580+ 表格** | **590+ 代码块** | ✅ |
+| **合计** | **~25,930** | **523(速查表)** | **590+ 表格** | **600+ 代码块** | ✅ |
 
 ### 15.2 版本日志
+
+#### v4.5(2026-07-28 第三章第三轮迭代:新增 6 大 Agent 框架)
+
+- ✅ 第三章《智能体主体》框架对比从 11 个扩展到 **17 个**,新增 6 个 2026 年主流框架深度解析:
+  - **PydanticAI**(Pydantic 团队):类型安全 + 结构化输出,FastAPI 体验带入 GenAI
+  - **smolagents**(Hugging Face):"用代码思考",极简 Code Agent,核心 ~1k 行
+  - **Agno**(原 Phidata):全栈 Agent 平台,三层架构(框架+运行时+控制面)
+  - **MetaGPT**(深度赋智):SOP 驱动,模拟软件公司,一行需求生成完整项目
+  - **AgentScope**(阿里达摩院):分布式优先 + Agentic RL 模型微调
+  - **PraisonAI**:低代码/零代码,5 行起,多频道 24/7 部署
+- ✅ 新增框架范式分组(图编排/角色协作/厂商绑定/极简代码/全栈平台/分布式/低代码)
+- ✅ 新增 7.16 六大新框架横向对比表(12 维度)
+- ✅ 新增 2 张自绘图:六大框架雷达图 + 全部框架 GitHub Stars 柱状图
+- ✅ 选型决策树扩展:新增 6 个分支(极简代码/类型安全/全栈平台/分布式/低代码/SOP)
+- ✅ 词汇表新增 10 个术语(Code Agent/SOP/AgentOS/Agentic RL/Model Router 等)
+- ✅ 参考文献新增 6 个框架官方文档 + 3 篇论文(MetaGPT/AFlow/AgentScope)
+- ✅ README 统计更新:合计 ~25,930 行、523 速查术语
 
 #### v4.4(2026-07-22 第十五章完成)
 
@@ -1263,7 +1287,7 @@
   - 安全加固与部署上线:Docker 化、环境变量管理、速率限制、日志审计
   - 十大失败模式排查表(附症状、根因、修复方案)
 - ✅ 第十四章"与本书其他章节的呼应"段落更新,加入第十五章实际内容描述
-- ✅ README 统计更新:合计 ~25,700 行、513 速查术语、15 个章节
+- ✅ README 统计更新:合计 ~25,700 行、513 速查术语、15 个章节(v4.4 基准)
 
 #### v4.3(2026-07-22 新增多模态笔记)
 
