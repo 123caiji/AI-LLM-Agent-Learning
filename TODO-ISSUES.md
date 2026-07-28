@@ -5,7 +5,22 @@
 
 ---
 
-## 一、本次迭代(v4.7)新增内容
+## 零、本次迭代(v4.8)新增内容
+
+> 以下内容已在 v4.8 中补充完成,列出供确认。
+
+| 序号 | 主题 | 补充位置 | 状态 | 说明 |
+|------|------|---------|------|------|
+| 1 | **Embedding 服务部署** | 10-§9.7 | ✅ 已完成 | TEI/vLLM/Sentence-Transformers 三方案对比 + Docker 部署 + 选型决策树 + 性能参考表 |
+| 2 | **Ollama vs vLLM 量化对比** | 10-§8.5 | ✅ 已完成 | 架构差异表 + RTX 4090 定量基准 + 内存并发对比 + 选型决策表 |
+| 3 | **Agent 框架能力矩阵** | 03-§7.19 | ✅ 已完成 | 17 框架 × 4 能力(Loop/Multi-Agent/Harness/Prompt)总览 + 分布统计 + 逐框架说明 + 选型决策树 |
+| 4 | **vLLM `--stream-interval` 参数验证** | 10-§21.4 | ✅ 已修正 | V1 引擎已移除该参数,更新为客户端层合并 chunk 方案 |
+| 5 | **vLLM Prefix Cache 指标名验证** | 10-§17.5 | ✅ 已修正 | V1 用两个 Counter(queries + hits)替代 V0 的 Gauge,更新 PromQL 查询和告警 |
+| 6 | **LangGraph 条件边回滚行为验证** | 05-§16.6.2 | ✅ 已修正 | 明确 LangGraph 非真正"回滚",而是累积状态重新执行(Pregel 超级步模型) |
+
+---
+
+## 一、上次迭代(v4.7)新增内容
 
 > 以下内容已在 v4.7 中补充完成,列出供确认。
 
@@ -40,10 +55,10 @@
 
 | 序号 | 主题 | 所属章节(建议) | 来源 | 说明 | 优先级 |
 |------|------|---------------|------|------|--------|
-| 1 | **Embedding 服务部署** | 10-部署运维 | 截图"还有向量的部分embedding" | 当前 10 章提到 Embedding 但没有独立的 Embedding 服务部署节(vLLM 可跑 Embedding 模型,但 Tei/Sentence-Transformers 等专用方案未覆盖) | 高 |
-| 2 | **Ollama 与 vLLM 部署对比量化** | 10-部署运维 | 截图"他和vllm都是部署的但是没见到" | 当前有 Ollama 和 vLLM 各自的章节,但缺少**同模型同硬件**下的量化对比表(QPS/TTFT/显存/并发) | 高 |
-| 3 | **Agent 框架 loop/multi-agent communication/harness/prompt 能力** | 03-智能体主体 | 截图"loop和多agent通信的还有harness还有prompt" | 当前 03 章有 17 个框架对比,但缺少**横向能力矩阵**:哪些框架原生支持 Agent Loop?哪些支持多 Agent 通信?哪些有测试 Harness?哪些有 Prompt 管理? | 高 |
-| 4 | **节点还原(分布式状态恢复)** | 05-任务流程编排 | 截图"但是要看节点去还原" | §16.6 已补充 checkpoint 回滚,但"分布式多节点状态还原"(如多个 Worker 节点崩溃后的全局状态恢复)未深入 | 中 |
+| ~~1~~ | ~~**Embedding 服务部署**~~ | ~~10-部署运维~~ | ~~截图"还有向量的部分embedding"~~ | ✅ **v4.8 已完成**(10-§9.7) | ~~高~~ |
+| ~~2~~ | ~~**Ollama 与 vLLM 部署对比量化**~~ | ~~10-部署运维~~ | ~~截图"他和vllm都是部署的但是没见到"~~ | ✅ **v4.8 已完成**(10-§8.5) | ~~高~~ |
+| ~~3~~ | ~~**Agent 框架 loop/multi-agent communication/harness/prompt 能力**~~ | ~~03-智能体主体~~ | ~~截图"loop和多agent通信的还有harness还有prompt"~~ | ✅ **v4.8 已完成**(03-§7.19) | ~~高~~ |
+| 4 | **节点还原(分布式状态恢复)** | 05-任务流程编排 | 截图"但是要看节点去还原" | §16.6 已补充 checkpoint 行为澄清,但"分布式多节点状态还原"(如多个 Worker 节点崩溃后的全局状态恢复)未深入 | 中 |
 | 5 | **推理模型(o1/o3/DeepSeek-R1)部署特殊考量** | 10-部署运维 | 推理模型 2025-2026 爆发 | 推理模型的 reasoning token 对 KV Cache/计费/流式的影响未量化(如 reasoning token 可能数千,显著增加延迟和成本) | 中 |
 | 6 | **Edge/边缘部署** | 10-部署运维 | llama.cpp/MLC-LLM 章节 | 手机/边缘设备上部署 LLM 的量化(内存占用/TTFT/功耗)未覆盖 | 低 |
 
@@ -55,13 +70,13 @@
 
 | 序号 | 问题 | 当前处理 | 需要确认 | 优先级 |
 |------|------|---------|---------|--------|
-| 1 | **vLLM `--stream-interval` 参数** | §21.4 中提到 `--stream-interval 0.05` | 需确认该参数在 vLLM V1 引擎中是否仍存在,还是已被移除/改名 | 高 |
-| 2 | **vLLM Prefix Cache 命中率指标名** | §17.5 使用 `vllm:gpu_prefix_cache_hit_rate` | vLLM V0 和 V1 引擎的指标名可能不同,V1 可能直接暴露 `prefix_cache_hit_rate`,需核实官方 metrics 文档 | 高 |
+| ~~1~~ | ~~**vLLM `--stream-interval` 参数**~~ | ~~§21.4 中提到 `--stream-interval 0.05`~~ | ✅ **v4.8 已验证**:V1 引擎已移除该参数,更新为客户端层合并 chunk 方案 | ~~高~~ |
+| ~~2~~ | ~~**vLLM Prefix Cache 命中率指标名**~~ | ~~§17.5 使用 `vllm:gpu_prefix_cache_hit_rate`~~ | ✅ **v4.8 已验证**:V1 用两个 Counter(`queries` + `hits`)替代 V0 的 Gauge,已更新 PromQL | ~~高~~ |
 | 3 | **TTFT/TPOT 量化基准数据来源** | §16.3.1/16.3.2 的基准表 | 这些数值是基于社区博客和经验的估算,非严格 benchmark。需标注"参考值"或补充实际压测数据 | 中 |
 | 4 | **MPS `--gpu-memory-utilization` 隔离** | §9.6 提到 MPS 可用 `--gpu-memory-utilization` 限制各实例显存 | 需确认 vLLM 的 `--gpu-memory-utilization` 在 MPS 下是否真正隔离显存(可能只是限制 KV Cache 池大小,模型权重仍共享) | 中 |
 | 5 | **Embedding 路由效果量化** | §21.3.4 的路由效果表 | "小模型占比 60%/准确率 92%" 等数据为估算值,需补充真实 A/B 测试数据或论文引用 | 中 |
 | 6 | **流式传输量 5x 的计算** | §21.4.2 声称流式传输量约为非流式 5 倍 | 该计算基于 200 token 输出 + 每 chunk 60B 估算;实际 chunk 大小受 SSE 格式、JSON 序列化、token 编码影响,可能有偏差 | 低 |
-| 7 | **LangGraph 条件边回滚行为** | §16.6.2 中 `retry` 路由回 `search` 节点 | 需确认 LangGraph 在条件边回退时是否真正"回滚"到上一个 checkpoint,还是重新从 START 执行(取决于 checkpointer 实现) | 高 |
+| ~~7~~ | ~~**LangGraph 条件边回滚行为**~~ | ~~§16.6.2 中 `retry` 路由回 `search` 节点~~ | ✅ **v4.8 已验证**:LangGraph 非真正"回滚",而是累积状态重新执行(Pregel 超级步模型),已更新文档描述 | ~~高~~ |
 
 ---
 
@@ -72,26 +87,26 @@
 | 截图内容 | 检查结果 | 位置 |
 |---------|---------|------|
 | "他和vllm都是部署的" → vLLM 部署 | ✅ 已覆盖 | 10-§3.5(完整部署示例) |
+| "他和vllm都是部署的" → Ollama vs vLLM 对比 | ✅ v4.8 新增 | 10-§8.5(Ollama vs vLLM 量化对比) |
 | "分离 / Ollama / OneAI" → P/D 分离 | ✅ 已覆盖 | 10-§9.5(P/D 分离深度) |
-| "还有向量的部分embedding" → Embedding | ⚠️ 部分覆盖 | 09-§7(Embedding 概念);10-§9.6 提到 MIG 可跑 Embedding 服务,但缺少独立部署节 → 见问题 #1 |
-| "loop和多agent通信的还有harness还有prompt" | ⚠️ 需加强 | 03 章有框架对比但缺能力矩阵 → 见问题 #3 |
+| "还有向量的部分embedding" → Embedding | ✅ v4.8 已完成 | 10-§9.7(Embedding 服务部署独立节) |
+| "loop和多agent通信的还有harness还有prompt" | ✅ v4.8 已完成 | 03-§7.19(Agent 框架能力矩阵) |
 | "计算库构建的轻量级本地推理框架(llama.cpp)" | ✅ 已覆盖 | 10-§8(llama.cpp 深度) |
-| "这几个都没(loop/harness/multi-agent/prompt)" | ⚠️ 需加强 | 指的是某个具体框架缺失这些能力 → 需在 03 章补充能力矩阵 |
+| "这几个都没(loop/harness/multi-agent/prompt)" | ✅ v4.8 已完成 | 03-§7.19(17 框架能力矩阵已覆盖) |
 
 ---
 
 ## 六、迭代计划
 
-### v4.8(下次迭代建议优先级)
+### v4.9(下次迭代建议优先级)
 
-1. **[高]** Embedding 服务部署独立节(10 章):TEI / vLLM Embedding / Sentence-Transformers 部署 + 性能对比
-2. **[高]** Ollama vs vLLM 量化对比表(10 章):同模型同硬件的 QPS/TTFT/显存/并发对比
-3. **[高]** Agent 框架能力矩阵(03 章):Loop / Multi-Agent 通信 / Harness / Prompt 管理 横向对比
-4. **[高]** 待确认问题 #1/#2/#7:核实 vLLM V1 指标名和 LangGraph 回滚行为
-5. **[中]** 推理模型部署特殊考量(10 章):reasoning token 对延迟/成本/KV Cache 的影响量化
-6. **[中]** 滑动窗口深度补充(10 章):Python/Redis 实现 + 与令牌桶场景量化对比
+1. **[中]** 推理模型部署特殊考量(10 章):reasoning token 对延迟/成本/KV Cache 的影响量化
+2. **[中]** 滑动窗口深度补充(10 章):Python/Redis 实现 + 与令牌桶场景量化对比
+3. **[中]** 待确认问题 #3/#4/#5:核实 TTFT 基准数据来源、MPS 显存隔离、Embedding 路由效果
+4. **[中]** 节点还原(分布式状态恢复):多 Worker 节点崩溃后的全局状态恢复
+5. **[中]** 滑动窗口(上下文管理):滑动窗口 vs 摘要压缩 vs 检索增强的 Token 消耗量化对比
 
-### v4.9+(远期)
+### v5.0+(远期)
 
 - Edge/边缘部署量化(手机/Jetson 树莓派)
 - Restate/Inngest 与 Temporal 对比(05 章)
@@ -101,4 +116,4 @@
 ---
 
 **📅 最后更新:** 2026-07-28
-**📊 对应版本:** v4.7
+**📊 对应版本:** v4.8
