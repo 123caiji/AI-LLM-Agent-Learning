@@ -84,7 +84,8 @@
 │  第 3 层  Agent 开发框架(买零件,自己造)                                 │
 │  ┌──────────────────────────────────────────────────────────────────┐    │
 │  │ LangGraph · CrewAI · OpenAI Agents SDK · Claude Agent SDK ·      │    │
-│  │ Google ADK · MS Agent Framework · Pydantic AI · LlamaIndex …     │    │
+│  │ Google ADK · MS Agent Framework · Pydantic AI · smolagents ·       │    │
+│  │ Agno · MetaGPT · AgentScope · PraisonAI · LlamaIndex · Mastra       │    │
 │  │ ── 给要自建 Agent 的开发者 ──► 本章第四节                          │    │
 │  └──────────────────────────────────────────────────────────────────┘    │
 │                                                                          │
@@ -640,6 +641,11 @@ Lovable/Bolt.new/v0            git 导出             Claude Code/Codex/Cursor
 | **MS Agent Framework 1.0** | .NET + Python 对等 | Semantic Kernel + AutoGen 合并继任 | 企业级、多模型、OTel | 微软栈企业 | 2026-04-03 GA |
 | **Pydantic AI V2** | Python | harness-first + capability 原语 | 类型安全、工程洁癖友好 | 严谨工程团队 | 2026-06-23 发布 |
 | **LlamaIndex Workflows 1.0** | Python + TS | 检索/索引一等公民 | RAG 型 agent | 知识库密集型应用 | 2026-06-22 发布 |
+| **smolagents** | Python | code-act(Agent 直接写代码当动作) | 极简透明(~1k 行)、HF 生态 | 教学/轻量任务/代码智能体 | 2026-05 v1.26 |
+| **Agno**(原 Phidata) | Python | 全栈平台(Framework+AgentOS+UI) | 开箱即用、100+工具、多租户 | 需要生产级全栈平台 | 2026-07 v2.8(迭代极快) |
+| **MetaGPT** | Python | SOP 驱动,模拟软件公司 | 一行需求→完整项目 | 软件生成/研究型多 Agent | ⚠️维护趋缓(MGX 商业化) |
+| **AgentScope** | Python + Java | 不约束模型,分布式优先 | Agentic RL 微调、K8s 部署 | 大规模分布式/模型训练 | 2026-05 v1.0.20 |
+| **PraisonAI** | Python + JS | 低代码/零代码,5 行起 | YAML 配置、多频道部署 | 快速原型/非工程师团队 | 2026-07 v4.6(迭代极快) |
 
 ### 4.2 能力雷达图
 
@@ -705,9 +711,43 @@ Lovable/Bolt.new/v0            git 导出             Claude Code/Codex/Cursor
 **其他一席话:**
 
 - **Strands Agents**(AWS):模型驱动 loop 的轻框架,AWS 生态顺手;
-- **Mastra** 与 **Vercel AI SDK**:TypeScript 阵营主力,前端/全栈团队顺手;
-- **Agno**:带 **AgentOS** 的自托管 agent 运行时,强调性能与自部署;
-- **Smolagents**(HuggingFace):极简 **code-act** 路线(Agent 直接写代码当动作),教学与轻量任务友好。
+- **Mastra** 与 **Vercel AI SDK**:TypeScript 阵营主力,前端/全栈团队顺手。
+
+**smolagents(HuggingFace)— 极简 code-act 路线**
+
+- 核心:**Agent 直接写 Python 代码当动作**,而非 JSON 工具调用;研究表明省 30% 步骤;
+- 核心逻辑仅 ~1,000 行代码,极度透明,适合教学和轻量任务;
+- HF Hub 原生:Agent 可 `push_to_hub` / `from_hub` 分享和加载;
+- 内置多种代码执行沙箱(E2B/Docker/Modal);CLI 工具 `smolagent` / `webagent` 开箱即用;
+- 适合:想理解 Agent 原理的初学者、需要 LLM 写代码执行复杂逻辑的场景。
+
+**Agno(原 Phidata)— 全栈 Agent 平台**
+
+- 核心:**三层架构(Framework+AgentOS 运行时+Control Plane 管理面)**,声明式、秒级启动;
+- 开箱即带生产级 API(50+ 端点)、Web UI、RBAC 多租户、Cron 调度、审计日志;
+- 100+ 预置工具;20+ 向量库 Knowledge;Memory 跨会话记忆;多接口部署(Slack/Telegram 等);
+- 适合:需要**生产级全栈平台**(框架+运行时+UI+安全+调度一体)的企业级场景。
+
+**MetaGPT(深度赋智)— SOP 驱动的软件公司模拟**
+
+- 核心:**`Code = SOP(Team)`**——把标准作业程序(SOP)编码并施加到 LLM 团队上;
+- 一行需求→PRD→设计→编码→测试→完整软件仓库;内置 Data Interpreter 做数据分析;
+- 学术背书强:MetaGPT @ ICLR 2024 oral;AFlow @ ICLR 2025 oral;
+- ⚠️ 开源框架迭代趋缓(2025-03 后无新 PyPI release),团队重心转向商业产品 MGX。
+
+**AgentScope(阿里达摩院)— 分布式优先 + 模型微调**
+
+- 核心:**不约束模型,让 LLM 自身推理能力驱动行为**;三大支柱:Simple+Extensible+Production-ready;
+- 独有:**Agentic RL**(Trinity-RFT)可直接用强化学习训练 Agent 模型;
+- 原生支持 K8s/Serverless 分布式部署;MsgHub 多 Agent 对话管理器;另有 Java 版;
+- 适合:需要大规模分布式多 Agent 部署、或要用 RL 微调 Agent 模型的团队。
+
+**PraisonAI — 低代码/零代码,5 行起**
+
+- 核心:**`agent.start("任务")` 即可启动**,也支持 YAML 零代码模式;
+- 独特能力:Model Router(自动路由最便宜模型)、Doom Loop Detection(自动恢复卡住的 Agent)、Shadow Git Checkpoints(失败回滚);
+- Bot Gateway 原生支持 Telegram/Discord/Slack/WhatsApp 多频道 24/7 部署;
+- 迭代极快(3 天补丁节奏,856+ tags),作者个人维护;适合快速原型和非工程师团队。
 
 **框架选型快查(按首要约束反查):**
 
@@ -722,7 +762,11 @@ Lovable/Bolt.new/v0            git 导出             Claude Code/Codex/Cursor
 | 类型安全 + 工程洁癖 | Pydantic AI V2 |
 | 知识库/RAG 密集型 | LlamaIndex Workflows |
 | TypeScript 全栈 | Mastra、Vercel AI SDK |
-| 纯学习原理 | Smolagents(代码量最小,易读) |
+| 纯学习原理 | smolagents(代码量最小,易读) |
+| 需要生产级全栈平台(框架+运行时+UI) | Agno |
+| 一行需求生成软件项目 | MetaGPT |
+| 大规模分布式部署 / 模型微调 | AgentScope |
+| 最低代码量 / YAML 零代码 / 多频道部署 | PraisonAI |
 
 ### 4.4 AutoGen 与 AG2 的关系(容易搞混,单独说清)
 
@@ -740,13 +784,15 @@ Lovable/Bolt.new/v0            git 导出             Claude Code/Codex/Cursor
 ```
 原型期(天级)                      生产期(不能挂)
 ─────────────────────             ─────────────────────────
-CrewAI / Pydantic AI        ──►   LangGraph / MS Agent Framework
+CrewAI / Pydantic AI / PraisonAI ──►  LangGraph / MS Agent Framework / Agno
 (快,先把流程跑通)                  (durable execution + HITL + OTel)
+
 ```
 
-1. **两层策略:** 快框架(CrewAI/Pydantic AI)做原型验证逻辑;durable 框架(LangGraph/MAF)承载不能挂的生产任务;
+1. **两层策略:** 快框架(CrewAI/Pydantic AI/PraisonAI)做原型验证逻辑;durable 框架(LangGraph/MAF/Agno)承载不能挂的生产任务;
 2. **锁定成本在下降:** 主流框架都已支持 **MCP**,工具层(你写的 MCP servers)可以跨框架复用,迁移的主要成本在编排逻辑而非工具;
 3. **模型层同理:** 通过 LiteLLM/网关抽象(见 10 章),多数框架可换底座模型,不必被单一供应商绑死。
+4. **特殊路线:** 追求极简透明选 smolagents;追求软件自动生成选 MetaGPT(但注意维护趋缓);追求模型微调选 AgentScope。
 
 **换框架时的迁移成本清单(从易到难):**
 

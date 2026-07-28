@@ -401,6 +401,7 @@ GUI Agent 的胜负手不是"懂不懂",而是"点不点得准"。**视觉接地
 | ① 官方 Computer Use API | Anthropic Computer Use 等 | 官方提供"截图进、动作出"的工具定义 + 训练好的 grounding 能力,开发者只管截图与执行 | grounding 质量高、接入最快;动作空间官方定义(click/type/scroll/key...) | 绑定单一厂商模型;桌面环境(虚拟机/Docker)要自己搭 |
 | ② 开源框架 | browser-use、OpenHands(浏览能力) | 框架封装浏览器控制(Playwright),观察=截图+DOM/无障碍树双通道,模型可自选 | 模型可换(含开源 VLM);DOM 文本通道弥补像素短板 | 能力与所选模型强相关;双通道融合逻辑要自己调 |
 | ③ 自托管个人 Agent | OpenClaw / Hermes Agent(13 章) | 常驻进程内置浏览器控制与截图能力,入口在聊天 App | 7×24 待命、与记忆/技能体系打通 | 安全面大(截图含隐私、动作直达本机),见 13 章第五节 |
+| ④ 通用 Agent 框架 | **Agno / PraisonAI**(03/12/13 章) | 全栈 Agent 框架内置多模态工具(MCP 封装),可自由组合感知+推理+行动层 | 自由度最高;可嵌入已有系统;模型/工具全可换 | 需要自己写胶水代码;没有现成的 GUI Agent 循环 |
 
 **一个重要的工程分叉:纯像素 vs 像素+DOM。** 浏览器场景里,页面还有另一副"骨架"——DOM 树 / 无障碍树(Accessibility Tree),它是文本化的结构描述。SeeAct 等工作证明:让 LLM 读 DOM 选元素、再用 grounding 定位坐标,比纯截图猜坐标稳得多。桌面软件没有 DOM 可用,才退回纯像素路线。所以路径②常是混合双打:**DOM 负责"选谁",截图负责"点哪、验没验成"**。
 
@@ -414,6 +415,8 @@ GUI Agent 的胜负手不是"懂不懂",而是"点不点得准"。**视觉接地
 ├─ 跨桌面软件(Office、IDE、系统设置)
 │   ├─ 走官方参考实现 ─────────→ 路径①(虚拟机 + Computer Use)
 │   └─ 要常驻、接聊天 App 入口 ─→ 路径③(自托管个人 Agent,13 章)
+├─ 要嵌入已有系统/完全自定义形态
+│   └─ 需要最大自由度 ──────────→ 路径④(Agno/PraisonAI 通用框架,自由组装)
 └─ 手机 App?
     └─ 换赛道:移动端 GUI Agent(AppAgent / Mobile-Agent 系),
        原理同本章,观察是无障碍树 + 手机截图
@@ -772,6 +775,8 @@ if __name__ == "__main__":
 
 同样的手法可以包装:`ocr_image`(调 OCR 引擎)、`screenshot_region`(截屏并裁剪)、`parse_pdf`(调 MinerU/Docling)。**感知工具化的红利:** 13 章的自托管个人 Agent 正是靠这类"视觉/听觉工具箱",让一个纯文本底座的 Agent 也能"看图办事"——模型弱于视觉时,先用工具把模态翻成文字;模型强于视觉时,再升级到路线②原图直读。工具层不动,替换的只是认知层策略。
 
+**框架级支持:** 通用 Agent 框架(Agno/PraisonAI)已把多模态感知内置为一等公民——Agno 提供 100+ 工具含视觉/语音/OCR,PraisonAI 支持 MCP 工具即插即用。这意味着你不需要从零写感知层,选好框架后直接拼装:用 Agno 的 `VisionTool` 看图、`AudioTool` 听音,结合其 AgentOS 的記憶与调度,就能搭出一个多模态 Agent 原型(见 03 章框架对比和 15 章构建全流程)。
+
 ### 6.3 多模态记忆:图片嵌入检索与会话中的图像引用
 
 07 章的记忆体系扩展到多模态,多出三类记忆物:
@@ -952,6 +957,8 @@ GUI/屏幕 Agent 的感知原料是截图,而截图是隐私炸弹:密码输入�
 - **browser-use:** https://github.com/browser-use/browser-use
 - **OSWorld 环境:** https://github.com/xlang-ai/OSWorld
 - **sentence-transformers(CLIP 模型):** https://www.sbert.net/
+- **Agno(原 Phidata):** https://github.com/agno-agi/agno —— 全栈 Agent 框架,内置 100+ 工具含视觉/语音/OCR
+- **PraisonAI:** https://github.com/MervinPraison/PraisonAI —— 低代码 Agent 框架,MCP 多模态工具即插即用
 
 ### 9.3 常见问题 FAQ
 
@@ -985,7 +992,7 @@ GUI/屏幕 Agent 的感知原料是截图,而截图是隐私炸弹:密码输入�
 
 1. **多模态 Agent = 感知面 × 行动面的双重扩展:** 观察从文本扩到像素与波形,动作从回消息扩到点屏幕、开口说。公式化仍是 03 章的循环,只是 O 与 A 换了物理形态。
 2. **VLM 三段式(编码器 → 投影层 → LLM)是当前视觉理解的统摄架构**;图像经 patch 切分变成视觉 token,token 数随分辨率平方增长,动态分辨率与 token 压缩是主要工程杠杆;CLIP/SigLIP 的对比学习提供了"图文同空间"的对齐基础,也是多模态 RAG 的物理地基。
-3. **GUI Agent 的胜负手是视觉接地:** "看懂"不等于"点准",ScreenSpot 量视力、OSWorld/WebArena 考实操;三条落地路径(官方 API / 开源框架 / 自托管 Agent)各有取舍,像素+DOM 双通道是浏览器场景的工程甜点。
+3. **GUI Agent 的胜负手是视觉接地:** "看懂"不等于"点准",ScreenSpot 量视力、OSWorld/WebArena 考实操;四条落地路径(官方 API / 开源框架 / 自托管 Agent / 通用框架)各有取舍,像素+DOM 双通道是浏览器场景的工程甜点。
 4. **语音正从三段式(ASR→LLM→TTS)走向端到端:** 音频 token 化让声音直接进 LLM,全双工消灭对讲机感,首响延迟从秒级压进亚秒级;faster-whisper 让本地转写在 CPU 上日用可行。
 5. **文档与视频是"高信息密度"模态:** 文档靠 OCR+版面分析流水线或 VLM 直读,视频靠帧采样+时序建模,两者都受视觉 token 预算约束——检索式观看(先定位再细看)是长视频的通用解。
 6. **工程上把感知能力 MCP 工具化**,认知层就能在"模态转文本"与"原生多模态"之间自由换档;多模态记忆遵循"原资产与嵌入分离、摘要常驻、原图回捞"。

@@ -201,6 +201,11 @@ Agent 项目失败的第一大原因不是技术,是**需求模糊**:"做一个�
 | **OpenAI Agents SDK** | 轻量:Agent+Handoff+Guardrail | 中:Session 抽象 | 原生支持 MCP | 强:内置 tracing | 中:API 绑定深 | 弱~中:官方主推自家模型(可接兼容端点) |
 | **Google ADK** | 多 Agent 树+工作流 Agent | 强:Session/State/Artifact | 支持 MCP;与 Google 工具链深绑 | 中强:与 Cloud Trace 集成 | 中:生态偏 Google Cloud | 中:Gemini 优先,支持 LiteLLM |
 | **Pydantic AI** | 函数式:类型化依赖注入 | 弱~中:状态自理 | 支持 MCP;工具即类型化函数 | 强:Logfire 集成 | 中:年轻但工程品味好 | 强:任意模型 |
+| **smolagents** | code-act:LLM 写代码当动作 | 弱:内存态,无持久化 | 支持 MCP;HF Hub 生态 | 弱~中:基础日志 | 弱~中:教学/轻量,非生产 | 强:LiteLLM/Transformers |
+| **Agno** | 声明式 Agent+Team+Workflow | 强:Memory+Knowledge+Storage+Session 四层记忆 | 100+工具+MCP;20+向量库 | 强:AgentOS tracing+OTel+审计 | 中高:迭代快,全栈平台 | 强:20+ LLM |
+| **MetaGPT** | SOP 驱动:Role+Action+Environment | 中:Memory+Message 历史 | 内置 RAG;无原生 MCP | 弱:基础日志 | 中:维护趋缓,学术为主 | 中:OpenAI/Ollama 等 |
+| **AgentScope** | ReAct+MsgHub+Pipeline | 强:InMemory+长期记忆+压缩 | MCP+A2A 完整支持 | 中强:OTel 内置 | 中:分布式成熟,企业可用 | 中:DashScope 优先,兼容 OpenAI |
+| **PraisonAI** | 声明式 Agent+Agents 自动协作 | 中:Session+Memory 开箱 | MCP 一等公民;100+工具 | 中:Tracing+Telemetry | 中:迭代极快,工程实用 | 强:24+ LLM |
 | **Dify / Coze(低代码)** | 可视化画布(图) | 平台托管 | 平台插件市场 | 平台内置 | 中:受平台能力天花板限制 | 平台内置模型列表 |
 | **纯手写(零框架)** | 你自己定 | 你自己定 | 自己封装或直接 MCP Client | 你自己定 | 取决于你自己 | 完全中立 |
 
@@ -216,6 +221,11 @@ Agent 项目失败的第一大原因不是技术,是**需求模糊**:"做一个�
 | OpenAI Agents SDK | 已在 OpenAI 生态、要轻量 handoff | 与厂商绑定;抽象少意味着持久化等要自己补 |
 | Google ADK | Gemini + Google Cloud 技术栈 | 离开 Google 生态后优势递减 |
 | Pydantic AI | 类型安全强迫症、Python 工程团队 | 多 Agent/复杂编排原语少,要自己搭 |
+| smolagents | 学习原理、轻量代码智能体、HF 生态 | 无持久化,非生产;代码执行需安全沙箱 |
+| Agno | 想快速获得生产级全栈平台(API+UI+安全) | 框架较新,生态不如 LangGraph 成熟 |
+| MetaGPT | 一行需求生成软件项目、研究型多 Agent | 维护趋缓,生产场景需评估;Python 版本限制 |
+| AgentScope | 大规模分布式部署、模型强化学习微调 | 需特定云环境;社区较新 |
+| PraisonAI | 快速原型、非工程师 YAML 零代码、多频道部署 | 个人维护项目,企业级支持有限 |
 | Dify/Coze | 非工程师参与、快速验证、内部工具 | 复杂逻辑撞天花板;数据与逻辑托管在平台上;迁移成本 |
 | 纯手写 | 学习、极简单 Agent、完全掌控 | 一切自理:持久化、流式、中断、观测,轮子要一个个造 |
 
@@ -226,11 +236,19 @@ Agent 项目失败的第一大原因不是技术,是**需求模糊**:"做一个�
         │否
 流程只是"一问一答+几个工具",没有复杂分支? ──是──> 纯手写或轻量 SDK
         │否(有循环/分支/审批/长任务)
-需要中断恢复、人工审批、长任务断点续跑? ──是──> LangGraph(图编排+Checkpoint)
+需要中断恢复、人工审批、长任务断点续跑? ──是──> LangGraph(图编排+Checkpoint) 或 Agno(AgentOS 全栈)
         │否
 任务是"几个角色对话/评审/辩论"? ──是──> AutoGen 或 CrewAI
         │否
 类型安全至上的 Python 团队? ──是──> Pydantic AI
+        │否
+追求极简透明 / LLM 直接写代码执行? ──是──> smolagents
+        │否
+需要生产级全栈平台(框架+运行时+UI+安全)? ──是──> Agno
+        │否
+需要模型微调(Agentic RL) / 大规模分布式? ──是──> AgentScope
+        │否
+想要最低代码量 / YAML 零代码 / 多频道部署? ──是──> PraisonAI
 ```
 
 三条补充经验:
@@ -1169,6 +1187,11 @@ Mindflow 团队的生产经验表明：**从 Day 1 就容器化**，不仅是隔
 - AutoGen (AG2): https://github.com/ag2ai/ag2
 - CrewAI 文档: https://docs.crewai.com/
 - Google ADK: https://github.com/google/adk-python
+- smolagents: https://huggingface.co/docs/smolagents/en/index (仓库 https://github.com/huggingface/smolagents)
+- Agno: https://docs.agno.com (仓库 https://github.com/agno-agi/agno)
+- MetaGPT: https://docs.deepwisdom.ai/main/en/ (仓库 https://github.com/FoundationAgents/MetaGPT)
+- AgentScope: https://doc.agentscope.io/ (仓库 https://github.com/agentscope-ai/agentscope)
+- PraisonAI: https://docs.praison.ai/ (仓库 https://github.com/MervinPraison/PraisonAI)
 - MCP 协议规范: https://modelcontextprotocol.io/
 - FastMCP: https://github.com/jlowin/fastmcp
 - Dify 开源仓库: https://github.com/langgenius/dify
