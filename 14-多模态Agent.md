@@ -319,6 +319,89 @@ for text, s in zip(texts, scores):
 
 **幻觉(Hallucination)问题:** VLM 会"看见不存在的东西"——说图里有三只狗其实只有两只,把模糊区域脑补成文字。成因与文本幻觉同源(语言先验过强),但视觉场景多了一条:**语言先验压过视觉证据**——当模型"不太看得清"时,倾向于按常识编。POPE(Polling-based Object Probing Evaluation)等基准专门测对象幻觉;缓解手段包括高分辨率输入、接地数据训练、以及 §6.4 的"先验证再行动"工程防线。读 VLM 评测时,幻觉类指标与理解类指标要一起看。
 
+### 2.6 VLM 部署量化:Token 膨胀、内存开销与框架对比
+
+> **数据来源:** SGLang v0.2/v0.3 官方博客 [lmsys.org]、vLLM 官方文档 [docs.vllm.ai]、TensorRT-LLM 官方文档 [nvidia.github.io/TensorRT-LLM]、Qwen2-VL 论文 [arXiv:2409.12191]、InternVL 1.5 论文 [arXiv:2404.16821]
+
+VLM 部署与纯文本 LLM 的核心差异在于:**图像 token 数量远超典型文本 prompt**,且数量不可预测(动态分辨率),导致 KV Cache、batch 调度和 prefill 计算全面承压。
+
+#### 2.6.1 视觉 Token 膨胀量化
+
+| 模型 | 视觉编码器 | 最小 Token | 最大 Token | 倍数差异 |
+|------|-----------|-----------|-----------|---------|
+| LLaVA-1.5 | CLIP ViT-L/14@336px | 576(固定) | 576(固定) | 1x |
+| Qwen2-VL | ViT 675M + 2×2 压缩 | 4 | **16,384** | **4,096x** |
+| InternVL 1.5 | InternViT-6B + pixel shuffle | 256(1 tile) | **~10,240**(40 tiles) | **40x** |
+
+> **Qwen2-VL token 计算:** 224×224 图像 → patch_size=14 → 16×16=256 patches → 2×2 压缩 → **66 个视觉 token**。默认每张图 token 范围 4~16,384,视频总 token 限制 16,384。
+>
+> **InternVL 1.5 token 计算:** 448×448 tile → 32×32=1024 patches → pixel shuffle 1/4 → **256 token/tile**。测试时零样本扩展至 40 tiles(4K 分辨率)→ ~10,240 token + 缩略图。
+
+**实际影响:** 单张高分辨率图片(Qwen2-VL 16,384 token)的 KV Cache 开销相当于约 **12,000+ 英文单词**的文本输入。Prefill 阶段计算量随 token 数量平方增长(attention)。
+
+#### 2.6.2 VLM vs 纯文本 LLM 内存开销
+
+| 内存来源 | 纯文本 LLM | VLM | 差异 |
+|---------|----------|-----|------|
+| 模型权重 | LLM 参数 | LLM + 视觉编码器(675M~6B) | +4%~23% |
+| KV Cache(每 token) | 固定 | 相同(视觉 token 与文本 token 共享 KV Cache) | 视觉 token 数量决定总量 |
+| 图像预处理 | 无 | 像素缓存、tile 分割、特征中间结果 | 额外开销 |
+| 序列长度 | 可预测 | **不可预测**(动态分辨率) | 难以预分配 |
+
+**视觉编码器参数占比:**
+
+| 模型 | 视觉编码器 | LLM | 编码器占比 |
+|------|----------|-----|----------|
+| Qwen2-VL-7B | 675M | 7.6B | ~8.2% |
+| Qwen2-VL-72B | 675M | 72B | ~0.9% |
+| InternVL 1.5 | **6B**(InternViT) | 20B | **~23%** |
+| LLaVA-1.5-7B | ~300M(CLIP ViT-L/14) | 7B | ~4.1% |
+
+> **关键发现:** 视觉编码器在小模型中占比更高(Qwen2-VL-7B 占 8.2%),InternVL 1.5 的 InternViT-6B 占总参数 23%,内存开销显著。
+
+#### 2.6.3 框架 VLM 部署对比
+
+**SGLang(官方基准最丰富):**
+
+| 对比项 | 数据 | 来源 |
+|--------|------|------|
+| LLaVA-OneVision vs HF Transformers | **4.5x 加速** | SGLang v0.3 博客 |
+| SGLang vs vLLM(Llama-70B 吞吐) | **最高 3.1x** | SGLang v0.2 博客 |
+| SGLang vs TensorRT-LLM | 经常匹配甚至超越 | SGLang v0.2 博客 |
+
+> SGLang 同时是 **LLaVA v1.6 官方发布 Demo 的推理后端**。
+
+**vLLM(实验性 VLM 支持):**
+- 支持模型:LLaVA-1.5/OneVision、Qwen2-VL、Phi-3.5-Vision、MiniCPM-V 等
+- 多图限制:需通过 `limit_mm_per_prompt` 设置每 prompt 最大图片数
+- **未发布专门 VLM 基准数据**(仅提供使用指南)
+
+**TensorRT-LLM(多模态优化):**
+- 三阶段架构:Multimodal Input Processor → Encoder → LLM Decoder 融合
+- **In-Flight Batching**:GPU executor 内批量处理多模态请求
+- **CPU/GPU 异步**:重叠 CPU 预处理与 GPU 图像编码
+- **Raw data hashing**:图像哈希提升 KV Cache 复用率
+- 支持 Qwen2-VL-7B(通过 `trtllm-serve --backend pytorch`)
+
+**框架选型对比:**
+
+| 维度 | SGLang | vLLM | TensorRT-LLM |
+|------|--------|------|-------------|
+| VLM 性能 | **最优**(4.5x vs HF) | 实验性 | 优秀(In-Flight Batching) |
+| 易用性 | Good | Good | Poor(需编译) |
+| 开源程度 | 完全开源 | 完全开源 | 部分开源 |
+| VLM 基准数据 | ✅ 丰富 | ❌ 缺失 | ❌ 缺失 |
+| 推荐场景 | VLM 生产部署 | 快速原型 | NVIDIA 环境极致性能 |
+
+#### 2.6.4 VLM 部署核心挑战
+
+| 挑战 | 根因 | 框架应对 |
+|------|------|---------|
+| **图像 Token 膨胀** | 动态分辨率 → 单图可达万级 token | 限制 `max_pixels`;LLaVA-Mini 优化(内存 360MB→0.6MB,计算 -77%,速度 3x) |
+| **变长序列调度** | 不同图片 token 数 4~16,384,batch 内差异巨大 | vLLM PagedAttention;SGLang RadixAttention;TRT-LLM In-Flight Batching |
+| **KV Cache 预分配** | 无法预测单请求的视觉 token 数 | PagedAttention 动态分配;连续批处理动态调整 |
+| **Prefill 计算量** | Attention 随 token 数 O(n²) 增长 | 视觉 token 压缩(2×2 / pixel shuffle);稀疏注意力 |
+
 ---
 
 ## 三、视觉操作 Agent(GUI / Computer Use)
@@ -924,6 +1007,7 @@ GUI/屏幕 Agent 的感知原料是截图,而截图是隐私炸弹:密码输入�
 | §6.3 多模态记忆 | 07 章 记忆会话状态 | 记忆物从文本扩展到图/音/截图 |
 | §7 基准解读 | 11 章 评估 | 基准污染、口径问题一脉相承 |
 | §8 视觉/语音注入 | 11 章 安全 | 提示注入的模态扩展;防御体系沿用 11 章 |
+| §2.6 VLM 部署量化 | 10 章 部署运维 | VLM 的 token 膨胀/内存开销是 10 章推理引擎部署的延伸 |
 | 视觉/音频 token 机制 | 09 章 模型底座 | tokenizer/嵌入/上下文窗口的模态推广 |
 
 ### 9.2 参考来源
@@ -936,6 +1020,7 @@ GUI/屏幕 Agent 的感知原料是截图,而截图是隐私炸弹:密码输入�
 - **BLIP-2:** Li et al., "BLIP-2: Bootstrapping Language-Image Pre-training" — https://arxiv.org/abs/2301.12597
 - **LLaVA:** Liu et al., "Visual Instruction Tuning" — https://arxiv.org/abs/2304.08485(改进基线版:https://arxiv.org/abs/2310.03744)
 - **Qwen-VL:** Bai et al. — https://arxiv.org/abs/2308.12966;**Qwen2-VL(动态分辨率):** https://arxiv.org/abs/2409.12191
+- **InternVL 1.5:** Chen et al., "How Far Are We to GPT-4V?" — https://arxiv.org/abs/2404.16821
 - **Whisper:** Radford et al., "Robust Speech Recognition via Large-Scale Weak Supervision" — https://arxiv.org/abs/2212.04356
 - **SeeClick / ScreenSpot:** Cheng et al., "SeeClick: Harnessing GUI Grounding for Advanced Visual GUI Agents" — https://arxiv.org/abs/2401.10935
 - **SeeAct:** Zheng et al., "GPT-4V(ision) is a Generalist Web Agent, if Grounded" — https://arxiv.org/abs/2401.01614
@@ -954,6 +1039,9 @@ GUI/屏幕 Agent 的感知原料是截图,而截图是隐私炸弹:密码输入�
 - **LLaVA:** https://github.com/haotian-liu/LLaVA
 - **faster-whisper:** https://github.com/SYSTRAN/faster-whisper
 - **Playwright:** https://playwright.dev/python/
+- **SGLang v0.2/v0.3 博客(VLM 基准):** https://lmsys.org/blog/2024-07-25-sglang-llama3/ 、 https://lmsys.org/blog/2024-09-04-sglang-v0-3/
+- **vLLM VLM 文档:** https://docs.vllm.ai/en/latest/models/vlm.html
+- **TensorRT-LLM 多模态文档:** https://nvidia.github.io/TensorRT-LLM/features/multi-modality.html
 - **browser-use:** https://github.com/browser-use/browser-use
 - **OSWorld 环境:** https://github.com/xlang-ai/OSWorld
 - **sentence-transformers(CLIP 模型):** https://www.sbert.net/

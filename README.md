@@ -1244,16 +1244,53 @@
 | 06 提示推理 | ~1950 | 30 | 28+ | 25+ | ✅ v5.0 |
 | 07 记忆状态 | ~1750 | 30 | 22+ | 20+ | ✅ v4.9 |
 | 08 RAG 体系 | ~2430 | 40 | 30+ | 35+ | ✅ v4 |
-| 09 模型底座 | ~2100 | 50 | 32+ | 27+ | ✅ v5.1 |
+| 09 模型底座 | ~2180 | 50 | 36+ | 27+ | ✅ v5.2 |
 | 10 部署运维 | ~4400 | 72 | 72+ | 78+ | ✅ v5.1 |
-| 11 安全评估 | ~2460 | 50 | 30+ | 30+ | ✅ v4 |
+| 11 安全评估 | ~2540 | 50 | 35+ | 30+ | ✅ v5.2 |
 | 12 Agent 对比(专题) | ~1020 | 20 | 15+(含 3 张自绘图) | 5+ | ✅ v4.1 |
 | 13 自托管 Agent(专题) | ~870 | 18 | 27(含 2 张自绘图) | 10+ | ✅ v4.6 |
-| 14 多模态 Agent(专题) | ~1030 | 39 | 30+ | 4(完整示例) | ✅ v4.6 |
+| 14 多模态 Agent(专题) | ~1120 | 41 | 35+ | 4(完整示例) | ✅ v5.2 |
 | 15 构建自己的Agent(专题) | ~1138 | 45 | 40+ | 10+(双版本完整代码) | ✅ v4.4 |
-| **合计** | **~28,300** | **545(速查表)** | **670+ 表格** | **670+ 代码块** | ✅ |
+| **合计** | **~28,550** | **547(速查表)** | **680+ 表格** | **670+ 代码块** | ✅ |
 
 ### 15.2 版本日志
+
+#### v5.2(2026-07-30 FlashMLA Kernel/Agent评估框架/VLM部署量化/编号修复)
+
+**第九章《底层大模型底座》新增:**
+- ✅ 新增 **§10.4.5 FlashMLA Kernel — DeepSeek 开源生产级 MLA 内核**:
+  - 4 类内核分类表(密集/稀疏 × Prefill/Decoding)+ 硬件支持矩阵(SM90/SM100)
+  - H800 性能基准:3,000 GB/s 内存带宽 & 660 TFLOPS 计算性能(80% Tensor Core 利用率)
+  - Absorb vs Non-Absorb 模式与内核对应(Decoding=MQA 吸收 / Prefill=MHA 非吸收)
+  - Seesaw(跷跷板)调度:解决 MLA WGMMA 输出矩阵过大无法 ping-pong 的问题
+  - Crossover(交叉)技术:FP8 稀疏解码 250→410 TFLOPS(+64%)
+  - FlashMLA vs FlashAttention-3 对比(绝对值低因 H800 降频,利用率持平 75% vs 76%)
+  - V3.2 FP8 KV Cache 结构:每 token 656 字节(512B FP8 + 16B scale + 128B BF16 RoPE)
+  - 来源:FlashMLA GitHub [github.com/deepseek-ai/FlashMLA] + 两篇官方深度博客
+- ✅ 修复 **§10.5 编号重复**:PagedAttention(§10.5)与 Speculative Decoding(原§10.5)编号冲突。Speculative Decoding → §10.6,Continuous Batching → §10.7,推理优化总结 → §10.8
+
+**第十一章《安全对齐评估》扩展:**
+- ✅ **§2.4 Agent 能力基准** 从 3 个基准扩展至 8 个(+量化数据):
+  - SWE-bench:Verified 排行榜(Claude Sonnet 4.5 = 77.2%,GPT-4o = 33.2%)+ harness 效应(±27%)
+  - WebArena:GPT-4 = 14.41% vs 人类 78.24%(仅 1/5)
+  - GAIA:人类 92% vs GPT-4+插件 15%
+  - τ-bench:GPT-4o <50%,pass^8 <25%(可靠性指标)
+  - ToolBench(16,464 API)+ API-Bank(73 API)
+  - Agent-as-a-Judge:≈ 人工可靠性,优于 LLM-as-a-Judge
+  - 评估框架对比:OpenAI Evals / LangSmith / LangFuse / Prompt Flow
+
+**第十四章《多模态 Agent》新增:**
+- ✅ 新增 **§2.6 VLM 部署量化:Token 膨胀、内存开销与框架对比**:
+  - 视觉 Token 膨胀:LLaVA-1.5(576 固定)vs Qwen2-VL(4~16,384,4096x 差异)vs InternVL 1.5(256~10,240,40x)
+  - VLM vs LLM 内存开销:视觉编码器占比(Qwen2-VL-7B 8.2% / InternVL 1.5 23%)
+  - 框架对比:SGLang(4.5x vs HF,3.1x vs vLLM)/ vLLM(实验性)/ TensorRT-LLM(In-Flight Batching)
+  - 部署核心挑战:Token 膨胀 / 变长序列 / KV Cache 预分配 / Prefill O(n²)
+  - 来源:SGLang v0.2/v0.3 博客 + vLLM/TRT-LLM 官方文档 + Qwen2-VL/InternVL 论文
+- ✅ 更新 §9.1 章节映射表(新增 §2.6 ↔ 10 章部署运维)
+- ✅ 更新 §9.2 参考来源(新增 InternVL 1.5 论文 + SGLang/vLLM/TRT-LLM 文档)
+
+**问题文档更新:**
+- ✅ TODO-ISSUES.md 更新至 v5.2:FlashMLA + Agent 评估 + VLM 部署 + 编号修复
 
 #### v5.1(2026-07-29 MLA压缩量化/FA4 Blackwell/查缺补漏修复)
 
