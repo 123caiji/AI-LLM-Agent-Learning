@@ -1255,6 +1255,47 @@
 
 ### 15.2 版本日志
 
+#### v5.4(2026-08-03 最新术语搜索/MCP 2026-07-28/HippoRAG 2/投机解码/端侧推理/MCP评估)
+
+> **个人学习总结,欢迎斧正。** 本轮迭代搜索网络最新术语并验证后补充,所有术语均标注来源与验证状态。
+
+**第二章《智能体通信协议》更新:**
+- ✅ 新增 **MCP 2026-07-28 规范**(最大版本更新):无状态协议核心(废除握手/Session ID)、按请求能力协商、移除 Sampling/Roots 仅保留 Elicitation、Extensions 机制(Tasks/Skills over MCP/MCP Apps)、有状态vs无状态架构对比 ASCII 图
+
+**第八章《RAG 知识库体系》新增:**
+- ✅ 新增 **§5.3.1 HippoRAG 2**(海马体 RAG v2,2025):三组件架构图(人工新皮层/旁海马区/人工海马体)、v1 vs v2 对比表、与 GraphRAG/LightRAG 关键区别
+
+**第九章《底层大模型底座》新增:**
+- ✅ 新增 **§10.9 投机解码与 KV Cache 压缩新进展**:
+  - **SuffixDecoding**(NeurIPS 2025):后缀树缓存,Agentic 场景 3.9x 加速,含架构对比图
+  - **TurboQuant**(Google Research):KV Cache 16→3 bit 压缩,6x 压缩/8x 加速,⚠️ 已标注争议声明
+  - **EAGLE-3**(arXiv:2503.01840):直接 token 预测,6.5x 加速,vs EAGLE-2 对比表
+  - 投机解码方法选择决策树
+
+**第十章《部署网关运维》新增:**
+- ✅ 新增 **§21.5.5 PowerInfer-2**(上交大):手机端 Mixtral 47B 推理(11 tokens/s)、异构架构图、vs llama.cpp 25x 加速
+- ✅ 新增 **§21.5.6 TGI 维护模式**:HuggingFace TGI 进入维护,推荐迁移 vLLM/SGLang
+
+**第十一章《安全对齐评估》新增:**
+- ✅ 新增 **§2.4.15 MCP 评估新基准**:MCP-AgentBench / MCPMark / MCP-universe 三大新基准
+
+#### v5.3(2026-08-03 Agent通信协议生态/评估基准更新/CUA对比/Graph术语/术语验证修正)
+
+**第二章《智能体通信协议》新增:**
+- ✅ 新增 ANP/AGNTCY/AG-UI 三大协议详解 + 五维对比表 + Graph 术语(GraphRAG/LangGraph/GFM/HippoRAG/Agentic GraphRAG)
+- ✅ 术语验证修正:AG-UI 事件数修正为 17 种;移除未验证术语 ClawHub
+
+**第八章《RAG 知识库体系》新增:**
+- ✅ 新增 §5.6 Agentic GraphRAG 专节 + GFM 关系段落 + RAG 变体对比表更新
+
+**第十一章《安全对齐评估》新增:**
+- ✅ 六大新评估基准:ARC-AGI-2 / τ²-bench / MCP-Atlas / Terminal-Bench 2.1 / OSWorld / BFCL v4
+- ✅ 术语验证修正:移除 APEX-Agents(缺乏权威来源);MCP-Atlas 数据修正为 250 任务/36 服务器
+
+**第十四章《多模态 Agent》新增:**
+- ✅ CUA 三巨头对比(OpenAI/Anthropic/Google)+ 开源项目(OpenHands/Cua/Open Interpreter)
+- ✅ 术语验证修正:OpenClaw 标记为存疑,替换为 OpenHands
+
 #### v5.2(2026-07-30 FlashMLA Kernel/Agent评估框架/VLM部署量化/编号修复)
 
 **第九章《底层大模型底座》新增:**
