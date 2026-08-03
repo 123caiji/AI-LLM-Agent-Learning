@@ -55,6 +55,10 @@
 | 18 | **权限模式** | Permission Mode | Claude Code 的 default/acceptEdits/plan/bypassPermissions 四级行为边界 |
 | 19 | **规则文件** | CLAUDE.md / AGENTS.md | 放在仓库里、Agent 启动时自动加载的项目约定文件 |
 | 20 | **git 工作树** | Git Worktree | 同一仓库的多个并行检出,让多个 Agent 互不干扰地同时干活 |
+| 21 | **Semantic Kernel** | Semantic Kernel | 微软的AI编排SDK,提供规划器(planner)、记忆(memory)、连接器(connector)等抽象,2026年与AutoGen合并为Microsoft Agent Framework |
+| 22 | **代码即动作** | code-act | Agent不输出JSON工具调用而是直接输出可执行Python代码片段作为动作,smolagents的研究表明比JSON工具调用省约30%步骤 |
+| 23 | **智能体操作系统** | AgentOS | Agno提出的三层架构概念(Framework+AgentOS+Control Plane),指Agent的操作系统层——提供运行时、调度、存储、安全等基础设施 |
+| 24 | **开放遥测** | OpenTelemetry (OTel) | CNCF维护的可观测性开放标准,统一Tracing、Metrics、Logs三大信号,Agent框架内置OTel可接入任意兼容后端(Jaeger、Prometheus等) |
 
 ---
 

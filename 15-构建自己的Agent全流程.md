@@ -76,6 +76,9 @@
 | 43 | **交接** | Handoff | 把任务连同上下文转交给另一个 Agent 的机制 |
 | 44 | **技能** | Skill | 封装好的可复用能力包(指令 + 脚本 + 资源) |
 | 45 | **负向范围** | Negative Scope | 明确写下"这个 Agent 不做什么"的边界声明 |
+| 46 | **LangSmith** | LangSmith | LangChain生态的全链路可观测性平台,记录Agent运行中每一步的输入/输出/耗时/错误,提供可视化trace和time-travel调试,LangGraph应用只需设置环境变量即可接入 |
+| 47 | **add_messages (Reducer)** | add_messages | LangGraph的状态合并函数,`Annotated[list, add_messages]`告诉LangGraph对消息列表字段用追加语义而非覆盖,是图状态管理的核心机制 |
+| 48 | **time-travel调试** | time-travel调试 | LangGraph借助Checkpoint持久化提供的调试能力,可"回到"执行历史中的任意一步查看当时完整状态并从该点重新执行 |
 
 ---
 

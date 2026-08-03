@@ -51,6 +51,10 @@
 | 16 | **定时调度** | Cron | 类 Unix 系统的定时任务机制,Agent 自动化的"发条" |
 | 17 | **子智能体** | Sub-agent | 主 Agent 派生的、运行在独立上下文中的工作单元,用于并行与隔离 |
 | 18 | **私信配对** | DM Pairing | OpenClaw 默认守门机制:陌生私信先回配对码,你批准后才处理其消息 |
+| 19 | **FTS5** | SQLite全文检索 | SQLite Full-Text Search version 5,SQLite内置的全文检索引擎,支持分词、布尔查询、短语匹配、相关性排序,Hermes用它实现会话历史检索 |
+| 20 | **Honcho** | 用户建模框架 | 开源的用户建模框架,采用"dialectic"(辩证式)方法通过对话交互逐步构建和修正用户画像——不是静态标签,而是随对话演进的动态模型 |
+| 21 | **Tailscale** | 零配置VPN | 基于WireGuard的零配置VPN组网工具,让不同设备/服务器组成私有网络而无需公网暴露端口,自托管Agent远程访问的推荐方案 |
+| 22 | **uv** | Python包管理器 | Astral团队用Rust编写的Python包管理器(pip的替代品),速度比pip快10-100倍 |
 
 ---
 

@@ -50,6 +50,16 @@
 | 38 | **Contextual Retrieval** | 上下文检索 | Anthropic 提出,给每个块加上下文前缀 |
 | 39 | **RAGAS** | RAG 评估框架 | RAG Assessment,自动化评估 RAG 系统 |
 | 40 | **Long Context** | 长上下文 | 利用超长上下文窗口替代部分 RAG 场景 |
+| 41 | **GMM** | 高斯混合模型 | Gaussian Mixture Model,一种概率聚类算法,假设数据由多个高斯分布混合而成,RAPTOR用它对文本块向量聚类以构建分层摘要树 |
+| 42 | **Neo4j** | 图数据库 | 最流行的原生图数据库,使用属性图模型(节点+关系+属性),GraphRAG常用它存储和查询实体关系图谱 |
+| 43 | **TruLens** | RAG评估框架 | 开源的LLM应用评估框架,提供RAG检索质量评估能力(上下文相关性、事实性等指标),与RAGAS定位类似 |
+| 44 | **LayoutLM** | 文档理解模型 | 微软提出的文档理解预训练模型,能同时处理文本和版面布局信息,用于PDF版面分析和信息抽取 |
+| 45 | **ScaNN** | 向量搜索库 | Google开发的向量相似度搜索库,使用各向异性量化技术,在大规模搜索中精度和速度表现优秀 |
+| 46 | **DiskANN** | 磁盘ANN索引 | 微软提出的基于磁盘的ANN索引方案,将索引存储在SSD上,内存占用低,适合超大规模(十亿级)向量检索 |
+| 47 | **Agentic GraphRAG** | Agent化图谱RAG | 将Agent动态编排(规划/工具调用/反思)与GraphRAG结合的端到端方案,Agent自主决定何时查图、查哪些子图、是否需要多跳遍历 |
+| 48 | **GFM** | 图基础模型 | Graph Foundation Model,在广泛图数据上预训练的大模型,能适应不同领域图数据和下游任务(如AnyGraph),有望替代GraphRAG中定制化的GNN组件 |
+
+> v5.3 新增(2026-08-03): Agentic GraphRAG / GFM
 
 ---
 
@@ -793,7 +803,59 @@ async def main():
 asyncio.run(main())
 ```
 
-### 5.6 RAG 变体对比
+### 5.6 Agentic GraphRAG(Agent 化图谱 RAG)
+
+> v5.3 新增(2026-08-03)
+
+**定位:** GraphRAG + Agentic RAG 的融合演进。传统 GraphRAG 的检索流程是固定的(先实体识别 → 再子图抽取 → 最后社区匹配);Agentic GraphRAG 把 Agent 引入检索循环,让 LLM 自主决定何时查图、查哪个子图、是否需要多跳遍历、何时停止检索并生成。
+
+**与 GraphRAG / Agentic RAG 的关系:**
+
+| 维度 | GraphRAG | Agentic RAG | Agentic GraphRAG |
+|------|----------|-------------|-------------------|
+| **知识结构** | 知识图谱 | 向量库(通常) | 知识图谱 |
+| **检索决策** | 固定流程 | Agent 自主决策 | Agent 自主决策 |
+| **多跳推理** | 图遍历(预定义) | 多轮检索(Agent 规划) | Agent 规划 + 图遍历 |
+| **典型实现** | Microsoft GraphRAG | LlamaIndex Workflow / LangGraph | GraphRAG + LangGraph / LlamaIndex Agent |
+
+**核心工作流:**
+
+```
+用户问题
+    ↓
+[1] Agent 规划:这个问题需要图谱检索吗?
+    ├── 简单事实 → 直接向量检索(Agentic RAG 路径)
+    └── 关系/多跳 → 进入图谱检索路径
+    ↓
+[2] 实体识别 + 查询改写(可能多轮)
+    ↓
+[3] 子图抽取 → Agent 评估:信息够吗?
+    ├── 不够 → 扩展遍历(沿图谱边继续搜索)
+    └── 够 → 进入生成
+    ↓
+[4] 上下文组装:子图 + 社区摘要 + 相关文档块
+    ↓
+[5] 生成 + 自反思:回答是否完整?
+    ├── 不完整 → 回到 [2] 重新检索
+    └── 完整 → 输出
+```
+
+**关键技术点:**
+- **动态检索深度:** Agent 根据问题复杂度决定遍历几跳,而非固定 1-2 跳
+- **工具化图谱操作:** 将"实体查询""关系查询""社区摘要查询"封装为 Agent 工具(Tool),Agent 自主调用
+- **反思循环:** 生成后自检,若发现遗漏则补充检索(类似 ReAct 但作用于图谱)
+- **与 MCP 结合:** 图谱查询可作为 MCP Tool 暴露给任意 Agent 框架
+
+**相关生态:**
+- **LlamaIndex + GraphRAG:** LlamaIndex 的 `KnowledgeGraphIndex` + Agent 模式可组合实现
+- **LangGraph + Neo4j:** LangGraph 编排检索流程,Neo4j 作为图谱后端
+- **Microsoft GraphRAG + AutoGen/MAF:** GraphRAG 提供图谱能力,AutoGen/MAF 提供 Agent 编排
+
+**GFM(图基础模型)与 GraphRAG 的关系:**
+
+GFM(Graph Foundation Model)是在广泛图数据上预训练的大模型(如港大的 [AnyGraph](https://github.com/HKUDS/AnyGraph),arXiv:2408.10700),能跨域适应不同图结构任务。当前 GraphRAG 的图谱构建和查询依赖 LLM 做实体/关系抽取,成本高且精度受限;GFM 有望在未来替代或增强这一环节——用预训练的图模型直接做图谱推理,减少对 LLM 抽取的依赖。但截至 2026 年,GFM 仍处于学术研究阶段,尚未在 GraphRAG 生产系统中广泛落地。
+
+### 5.7 RAG 变体对比
 
 | 变体 | 核心创新 | 适用场景 | 论文年份 |
 |------|---------|---------|---------|
@@ -808,6 +870,7 @@ asyncio.run(main())
 | **HippoRAG** | 海马体机制 | 多跳推理 | 2024 |
 | **Adaptive RAG** | 复杂度自适应 | 混合复杂度 | 2024 |
 | **Agentic RAG** | Agent+RAG | 复杂任务 | 2024+ |
+| **Agentic GraphRAG** | Agent+图谱检索 | 动态多跳推理、关系密集型复杂问答 | 2025+ |
 
 ---
 

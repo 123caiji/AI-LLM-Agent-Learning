@@ -67,6 +67,15 @@
 | 37 | **无障碍树** | Accessibility Tree | 操作系统/浏览器暴露的界面元素结构树,GUI Agent 的文本通道 |
 | 38 | **声码器** | Vocoder | 把声学特征/声学 token 还原为音频波形的模块 |
 | 39 | **打断** | Barge-in | 用户在助手说话时插话,助手立刻停嘴改听的能力 |
+| 40 | **POMDP** | 部分可观测马尔可夫决策过程 | Partially Observable Markov Decision Process,Agent无法直接观测环境全部状态只能通过观察推断,多模态Agent的本质就是把观测空间从文字扩大到像素与波形 |
+| 41 | **InfoNCE** | 信息噪声对比估计 | Info Noise-Contrastive Estimation,CLIP使用的对比学习损失函数,对每个图文对最大化正确配对的相似度与所有配对相似度之和的比值,温度系数控制分布尖锐度 |
+| 42 | **POPE** | 对象幻觉探测评估 | Polling-based Object Probing Evaluation,VLM对象幻觉评估基准,通过"是/否"问答测试模型是否会"看见不存在的物体" |
+| 43 | **CTranslate2** | 高效推理引擎 | 开源的高效推理引擎,用C++实现并在运行时做量化(int8/int16),对Transformer模型有针对性算子优化,faster-whisper用它实现约4倍提速 |
+| 44 | **EnCodec** | 神经音频编解码器 | Meta提出的神经音频编解码器,将连续波形压缩为离散声学token序列,是端到端语音模型"音频token化"的基础技术 |
+| 45 | **M-RoPE** | 多维旋转位置编码 | Multi-dimensional Rotary Position Embedding,Qwen2-VL引入,把1D RoPE扩展到2D/3D使位置编码能同时表达图像宽高和时间维度 |
+| 46 | **PagedAttention** | 分页注意力 | vLLM核心技术,借鉴操作系统虚拟内存分页机制管理KV Cache,按需分配固定大小"页",避免预分配最大长度的内存浪费 |
+| 47 | **RadixAttention** | 基数树注意力 | SGLang核心技术,用基数树(radix tree)缓存和复用前缀的注意力KV,多个请求共享相同前缀时直接复用缓存 |
+| 48 | **In-Flight Batching** | 飞行中批处理 | TensorRT-LLM特性,在请求执行过程中动态加入新请求到batch(而非等当前batch全部完成),进一步提升GPU利用率 |
 
 ---
 
@@ -577,6 +586,131 @@ with sync_playwright() as p:
 | **验证码/登录墙** | 设计上就是防自动化的 | 人工接管通道,不硬闯 |
 
 一句话:**GUI Agent 当前处于"演示惊艳、量产谨慎"的阶段**——OSWorld 上最强系统与人类(70%+ 完成率)仍有可见差距(§7)。把它放进无人值守的生产链路前,先读完第八节。
+
+### 3.6 CUA 三巨头对比(OpenAI / Anthropic / Google)
+
+> **v5.3 新增(2026-08-03)**
+
+2025-2026 年,Computer Use Agent(CUA)赛道形成三巨头格局。以下概念需先厘清:
+
+- **CUA(Computer-Using Agent):** 技术能力分类概念,指"能通过看屏幕、操作 GUI 完成任务"的能力,不特指具体产品
+- **Browser Agent(浏览器智能体):** CUA 的子集,只能在浏览器内工作(如 OpenAI Operator)
+- **Desktop Agent(桌面智能体):** CUA 在本地电脑的完整落地形态,操作范围覆盖整个操作系统
+
+#### 3.6.1 时间线与定位
+
+| 厂商 | 首发时间 | 产品形态 | 平台侧重 |
+|------|----------|----------|----------|
+| **Anthropic** | 2024-10(首个前沿模型) | Claude Computer Use → Claude Code → Claude Cowork | 桌面 OS(全栈) |
+| **OpenAI** | 2025-01(Operator) → 2025-05(Codex) → 2026 Codex Computer Use | Operator(Browser Agent)→ Codex(桌面,Mac/Win) | 浏览器 → 桌面 |
+| **Google** | 2025-10(Gemini 2.5 Computer Use) | API 预览 + Vertex AI 企业部署 | 浏览器 + 移动端(非桌面 OS) |
+
+#### 3.6.2 技术路线对比
+
+| 维度 | OpenAI(Operator/Codex) | Anthropic(Claude) | Google(Gemini 2.5 CU) |
+|------|--------------------------|---------------------|------------------------|
+| **模型 ID** | CUA 模型 / Codex 系列 | Claude 3.5 Sonnet → Opus 4.1+ | `gemini-2.5-computer-use-preview` |
+| **坐标系** | 未公开标准化 | 未公开标准化 | **1000×1000 标准化网格**(自动缩放) |
+| **操作类型** | 截图/点击/输入/操作应用 | 截图/点击/输入/键盘/滚动 | click/type/scroll/hover/drag + 移动端扩展 |
+| **移动端** | ❌ | ❌ | ✅(`open_app`/`long_press`/`go_home`) |
+| **并行操作** | ❌ | ❌ | ✅(单次响应返回多个独立操作) |
+| **错误恢复** | 有限 | 有限 | **60%+ 失败可自主修复** |
+| **安全哲学** | 验证商业可行性 | 责任优先,沙箱谨慎 | 多层实时安全检查(USER_CONFIRMATION/ACTUATE) |
+
+#### 3.6.3 性能基准
+
+| 基准 | OpenAI CUA | Anthropic Claude | Google Gemini 2.5 CU |
+|------|------------|------------------|----------------------|
+| **WebArena** | 58.1%(Operator 发布时) | — | 领先性能,显著优势 |
+| **OSWorld** | 38.1%(Operator 发布时) | 61.4%(Opus 系列) | — |
+| **WebVoyager** | 87%(Operator 发布时) | — | — |
+| **Online-Mind2Web** | — | — | 高准确率,低延迟 |
+| **速度对比** | — | — | 比竞品快 ~50%(Poke.com) |
+
+#### 3.6.4 Google Gemini 2.5 CU 安全机制(最完善)
+
+Google 采用双层安全模型:
+
+| 操作分类 | 处理方式 | 典型操作 |
+|----------|----------|----------|
+| **ACTUATE** | 默认执行 | 页面浏览、信息检索 |
+| **USER_CONFIRMATION** | 需用户确认 | 条款协议、验证码、金融交易、发送通信、敏感信息 |
+
+> 最佳实践:沙箱虚拟机/容器、专用受限浏览器配置文件、输入净化(防提示注入)、网站白/黑名单、监控审计日志。
+
+---
+
+### 3.7 开源 CUA 生态
+
+> **v5.3 新增(2026-08-03)**
+
+#### 3.7.1 可验证的高 Star 开源 Agent 项目
+
+| 项目 | GitHub Stars(2026) | 定位 | 维护方 |
+|------|---------------------|------|--------|
+| **OpenHands**(原 OpenDevin) | 75K+ | AI Agent 框架,偏 Coding Agent | All-Hands-AI 社区 |
+| **Cua** | 19.5K+ | Computer Use 工具箱 | 开源社区 |
+| **Open Interpreter** | 早期开源 CUA 范式代表 | "AI 直接操作电脑"路线先驱 | 开源社区 |
+
+> **注意:** 中文媒体广泛报道了一个名为"OpenClaw"的开源 CUA 项目(声称 28 万 Stars 超越 React),但该名称**无法从英文权威来源(GitHub Blog/Hacker News/TechCrunch)验证**,疑为中文自媒体对某真实项目的化名或夸大报道。读者如需引用,请直接访问 GitHub 核实仓库是否存在。
+
+#### 3.7.2 开源 CUA 的核心颠覆:权限突破
+
+无论具体项目名称如何,开源 CUA 的核心颠覆点是明确的——**权限突破而非智能突破**:
+
+- 把系统权限开放到最高级别:能执行终端命令、访问文件系统、操作本地应用
+- 技能市场(类似 Chrome Extension Store)可一键扩展功能
+- 支持接入几乎任何 LLM,不绑定厂商
+
+> 其颠覆不是模型更聪明,而是权限放开——本质是智能体在 PC 上的**权限突破,不是智能突破**。
+
+#### 3.7.3 权限放开的必然代价:安全事件
+
+开源 CUA 的权限放开带来了严重安全隐患:
+
+| 风险类型 | 详情 |
+|----------|------|
+| **恶意技能/插件** | 技能市场中恶意插件窃取加密货币钱包、账户凭证、系统访问权 |
+| **远程代码执行** | 权限放开后 RCE 漏洞影响范围远超沙盒方案 |
+| **实例暴露** | 大量实例暴露在互联网上,可被远程攻击 |
+| **全账户接管** | 一旦被攻破,攻击者获得整台电脑完全控制权 + 所有已连接账户、文件、服务 |
+
+> 企业落地建议:在开源 CUA 安全问题系统性解决前,大企业/敏感数据场景应使用经严格安全审查的商业 API(如 OpenAI/Anthropic/Google 官方 CUA),而非开放最高权限的开源工具。Klarna 用 OpenAI AI Agent 接管三分之二客服,用的就是商业 API 而非开源方案。
+
+#### 3.7.4 商业 CUA vs 开源 CUA:两种哲学
+
+| 维度 | 商业 CUA(Anthropic Claude Cowork 等) | 开源 CUA(OpenHands 等) |
+|------|--------------------------------------|------------------------|
+| **核心价值** | **稳**(稳定、安全、可控) | **能**(权限放开,自主能力远超沙盒) |
+| **权限** | 沙盒内谨慎运作 | 最高系统权限 |
+| **目标用户** | 非程序员,自然语言完成任务 | 开发者(配置门槛高) |
+| **风险责任** | 商业产品,事故砸声誉/法律责任 | 开源,出事是用户责任 |
+
+> **企业落地建议:** 在 OpenClaw 安全问题系统性解决前,大企业/敏感数据场景别碰。Klarna 用 OpenAI AI Agent 接管三分之二客服用的是经严格安全审查的商业 API,不是开放最高权限的开源工具。
+
+---
+
+### 3.8 OS Agent 综述方向
+
+> **v5.3 新增(2026-08-03)**
+
+**《OS Agents: A Survey on MLLM-based Agents for Computer, Phone and Browser Use》** 由浙江大学联合复旦大学、OPPO、中科院等 **10 个机构**完成,被 **ACL 2025 Oral** 接收。
+
+- **论文:** `arxiv.org/abs/2508.04482`
+- **项目主页:** `os-agent-survey.github.io`
+- **GitHub:** `github.com/OS-Agent-Survey/OS-Agent-Survey`
+
+**综述框架:**
+
+| 维度 | 内容 |
+|------|------|
+| **基础组件** | 环境(Environment)、观察空间(Observation Space)、动作空间(Action Space) |
+| **核心能力** | 理解(Understanding)、规划(Planning)、Grounding |
+| **构建方法** | 领域专用基础模型 vs Agent 框架 |
+| **评估协议** | 跨电脑/手机/浏览器的评估方式 |
+| **未来方向** | 安全与隐私、个性化(Personalization)、自我进化(Self-evolution) |
+
+> 综述以 Anthropic Computer Use 为标志性事件,带动了学术界与工业界在 OS Agents 领域的研究。
 
 ---
 
