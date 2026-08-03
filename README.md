@@ -1255,6 +1255,43 @@
 
 ### 15.2 版本日志
 
+#### v5.5(2026-08-03 注意力机制深度/线性注意力/MegaKernel/RL Rollout/Agent记忆系统)
+
+> **个人学习总结,欢迎斧正。** 本轮迭代深入注意力机制三大分支(全/稀疏/线性)、
+> GPU 推理内核优化、RL 训练推理优化,以及 2025 年 Agent 记忆系统的完整演进全景。
+
+**第七章《记忆会话状态》新增:**
+- ✅ 新增 **§5.9 Agent 记忆系统演进全景(2025-2026)**:
+  - 三阶段演进路线图(工程化集成→结构化图谱→认知架构)
+  - 五大代表性系统对比表(Mem0/Zep/MemOS/MemU/EverMemOS)
+  - EverMemOS 仿生四层记忆架构图(分类提取→MemCell→事件边界→多重召回)
+  - LoCoMo 长期记忆评估基准 + 评测争议声明
+  - 10 种记忆技术路线全景表 + 选型决策树
+- ✅ 术语表新增 4 个术语(LoCoMo/EverMemOS/MemCube/Event Boundary)
+
+**第九章《底层大模型底座》新增:**
+- ✅ 新增 **§10.10 稀疏注意力深度解析**:
+  - 注意力机制全景分类图(全/稀疏/线性三大类)
+  - DuoAttention 双头架构(检索头+流式头,已集成 SGLang)
+  - DSA 两阶段流水线详解(Lightning Indexer + Top-K 选择,复杂度 O(L²)→O(L·K))
+  - 稀疏注意力方法选择矩阵
+- ✅ 新增 **§10.11 线性注意力演进**:
+  - 核心原理(核函数分解,全局状态替代注意力矩阵)
+  - KDA 维度级遗忘门详解(传统线性→DeltaNet→KDA 演进)
+  - Kimi-Linear 3:1 混合架构图(KDA:Full Attention)
+  - 线性注意力生态表(KDA/DeltaNet/Flash-Linear-Attention/Lightning Attention/Mamba)
+- ✅ 新增 **§10.12 MegaKernel 与编译器优化**:
+  - 三大结构性开销(内核启动/流水线气泡/尾效应)
+  - 方案对比表(MPK/MegaKernels/TileRT/SonicMoE)
+  - Tawa ARef 编译优化流程(自动 Warp 级流水)
+- ✅ 新增 **§10.13 RL Rollout 优化与 MoE 通信**:
+  - Seer 三大优化(Divided Rollout/Context-Aware 调度/DGDS)
+  - DeepEP MoE 通信优化(稀疏路由+FP8+SM 专用化)
+- ✅ 术语表新增 12 个术语
+
+**第十一章《安全对齐评估》新增:**
+- ✅ 新增 **§2.4.17 Agent 记忆评估基准**:LoCoMo/LongMemEval/Mem360/MemOS横评/EverMind横评五大基准 + 代表性系统成绩表 + 评测争议声明
+
 #### v5.4(2026-08-03 最新术语搜索/MCP 2026-07-28/HippoRAG 2/投机解码/端侧推理/MCP评估)
 
 > **个人学习总结,欢迎斧正。** 本轮迭代搜索网络最新术语并验证后补充,所有术语均标注来源与验证状态。
