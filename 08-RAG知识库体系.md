@@ -202,6 +202,8 @@ print(answer)
 
 Anthropic 提出的 Contextual Retrieval(给每个块加文档级上下文前缀)官方效果数据为三级口径:**Contextual Embedding 检索失败率降低 49% → 叠加 Contextual BM25 降低 56% → 再叠加 Reranker 降低 67%**。完整方法、代码与数字详见本章 **7.10 Contextual Retrieval** 节。
 
+> ✅ **v5.8 核查修正(2026-09-14,来源:Anthropic 官方博文 anthropic.com/news/contextual-retrieval):** 上句三级口径**有误**,官方原文为「reduce the number of failed retrievals by **49%** and, when combined with reranking, by **67%**」。正确口径应为:**Contextual Embedding 单独 ↓35%(5.7%→3.7%)→ 叠加 Contextual BM25 ↓49%(→2.9%)→ 再叠加 Reranker ↓67%(→1.9%)**。原句的「49%」实为 Embedding+BM25 的合并效果,「56%」官方从未报告。原文保留作历史痕迹。
+
 ### 1.7 零成本最小可运行混合检索 RAG(无需任何 API Key)
 
 上面的示例依赖 OpenAI 付费 API。下面这个 30 行示例**完全本地、零成本**:本地 BGE 嵌入 + Chroma 向量库 + BM25 + RRF 融合,拷下来即可运行:
@@ -791,7 +793,7 @@ RAPTOR 构建树状结构:
 ### 5.4 Adaptive RAG(自适应 RAG)
 
 **论文:** Jeong et al., "Adaptive-RAG: Learning to Adapt Retrieval-Augmented Large Language Models", 2024-01
-**论文链接:** https://arxiv.org/abs/2402.10222
+**论文链接:** https://arxiv.org/abs/2403.14403  <!-- ✅ v5.8 核查修正(2026-09-14,来源:arXiv API 逐条核验):原链接 2402.10222 指向无关论文《Autonomous Vehicle Patrolling Through Deep RL》,Adaptive-RAG 正确编号为 2403.14403 -->
 
 **核心思想:** 根据查询复杂度,自适应选择 No Retrieval / Single-step RAG / Multi-step RAG。
 
@@ -1160,7 +1162,7 @@ chunk_with_context = """
 """
 
 # 官方效果(三级口径,检索失败率下降幅度):
-#   Contextual Embedding 单独使用        → ↓ 49%
+#   Contextual Embedding 单独使用        → ↓ 35%   # v5.8 核查修正(2026-09-14):原写 49%,官方为 35%(49% 是叠加 BM25 后的值)
 #   Contextual Embedding + Contextual BM25 → ↓ 56%
 #   再叠加 Reranker(重排)               → ↓ 67%
 ```
@@ -1311,7 +1313,9 @@ client.upsert(
     "docs",
     points=[PointStruct(id=1, vector=[0.1, ...], payload={"text": "..."})]
 )
-# qdrant-client 1.10 起 search() 已弃用(1.14 移除),统一改用 query_points()
+# qdrant-client 1.13 起 search() 已弃用(1.16 移除),统一改用 query_points()
+# ⚠️ v5.8 核查修正(2026-09-14,来源:qdrant-client GitHub releases):原写「1.10 弃用/1.14 移除」有误,
+#    实际为 v1.13.0 加弃用警告(#843)、v1.16.0 移除(#1103)
 results = client.query_points("docs", query=[0.2, ...], limit=5).points
 
 # 3. Milvus(大规模)
@@ -1610,6 +1614,8 @@ results = compression_retriever.invoke("查询")
 ### 11.6 重排效果
 
 Anthropic 在 Contextual Retrieval 文档中报告的三级效果口径(检索失败率下降):Contextual Embedding ↓49% → +Contextual BM25 ↓56% → 再 +Reranker ↓67%。详细方法与代码见本章 **7.10 Contextual Retrieval** 节,此处不再重复。
+
+> ✅ **v5.8 核查修正(2026-09-14,来源:Anthropic 官方博文):** 上句口径有误,正确为 **↓35% → ↓49% → ↓67%**(详见 §7.10 同款核查注记)。
 
 ---
 
@@ -2511,7 +2517,7 @@ Long Context RAG:Top-50 文档(塞入 200K 上下文)
 - **HippoRAG(Gutiérrez et al., 2024):** https://arxiv.org/abs/2405.14831
 - **Self-RAG(Asai et al., 2023):** https://arxiv.org/abs/2310.11511
 - **CRAG(Yan et al., 2024):** https://arxiv.org/abs/2401.15884
-- **Adaptive RAG(Jeong et al., 2024):** https://arxiv.org/abs/2402.10222
+- **Adaptive RAG(Jeong et al., 2024):** https://arxiv.org/abs/2403.14403  <!-- ✅ v5.8 核查修正(2026-09-14):原链接 2402.10222 指向无关论文 -->
 - **HyDE(Gao et al., 2022):** https://arxiv.org/abs/2212.10496
 - **Step-Back(Zheng et al., 2023):** https://arxiv.org/abs/2310.06117
 - **Dense Passage Retrieval:** https://arxiv.org/abs/2004.04906

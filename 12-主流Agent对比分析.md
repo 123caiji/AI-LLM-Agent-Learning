@@ -48,7 +48,7 @@
 | 11 | **子智能体** | Sub-agent | 主 Agent 派生的、运行在独立上下文中的专用 Agent |
 | 12 | **智能体名片** | Agent Card | A2A 协议中描述 Agent 能力与入口的 JSON 元数据 |
 | 13 | **模型上下文协议** | MCP (Model Context Protocol) | Anthropic 2024-11 开源的 Agent↔工具接入标准,已成事实标准 |
-| 14 | **智能体间协议** | A2A (Agent2Agent) | Google 发起、2026 年捐入 Linux Foundation 的 Agent↔Agent 协议 |
+| 14 | **智能体间协议** | A2A (Agent2Agent) | Google 发起、2025-06 捐入 Linux Foundation 的 Agent↔Agent 协议 <!-- ✅ v5.8 核查修正(2026-09-14,来源:Linux Foundation 新闻稿 2025-06-23):原写 2026 年,实为 2025-06-23 宣布捐入 --> |
 | 15 | **智能体客户端协议** | ACP (Agent Client Protocol) | 客户端(IDE)与各类 Agent 进程通信的协议,用于并排调度多个 Agent |
 | 16 | **沙箱** | Sandbox | 隔离的代码执行环境(容器/VM/系统级),限制 Agent 能碰什么 |
 | 17 | **审批策略** | Approval Policy | 规定 Agent 执行命令前何时需要人批准的规则(Codex 为代表) |
@@ -393,11 +393,11 @@ IDE(VS Code / JetBrains / Visual Studio / Xcode 等)、**GitHub.com 网页**、*
 - 自研 **SWE-1.6** 模型,各档**无限量**使用(用量费体现在 ACU 上而非模型 token 上);
 - 也可以通过 ACP 调度别家 Agent(用别家模型),定位从"一个 Agent"转向"Agent 的调度台"。
 
-**价格(2026-07 口径,2026-04 大降价后):**
+**价格(2026-07 口径,2025-04 大降价后):** <!-- ✅ v5.8 核查修正(2026-09-14,来源:Devin 官方 release notes):Devin 2.0 降价至 $20 起发生在 2025-04-03,原写 2026-04 -->
 
 | 项目 | 价格 | 说明 |
 |------|------|------|
-| 入门 | $20/月起 | 原价曾高达 $500/月,2026-04 降至 $20 起 |
+| 入门 | $20/月起 | 原价曾高达 $500/月,2025-04 降至 $20 起 <!-- ✅ v5.8 核查修正(2026-09-14,来源:docs.devin.ai 官方发布说明):年份由 2026-04 订正为 2025-04 --> |
 | 用量 | $2.25/ACU | 按 Agent 计算单元用量计费;第三方实测修一个 bug 约 $5 |
 
 > 这是"低门槛 + 用量计费"模式:轻度试用很便宜,重度委派要盯 ACU 账单。以官网为准。
@@ -867,12 +867,13 @@ CrewAI / Pydantic AI / PraisonAI ──►  LangGraph / MS Agent Framework / Agn
    │
 2025
  ├─ 2025-03  Manus 出圈,"通用 Agent"进入大众视野
+ ├─ 2025-04  Devin 2.0 发布,价格从 $500/月降至 $20 起 + 用量计费 —— 后台云 agent 价格雪崩
  ├─ 2025-07  ChatGPT Agent 发布(Operator + Deep Research 合并)
  ├─ 2025-10  LangGraph 1.0 GA,生产级编排框架成熟
  └─ 全年:后台云 agent 从新鲜事物变成各家标配
    │
 2026
- ├─ 价格雪崩:Devin 从 $500/月降到 $20 起 + 用量计费 —— 后台 agent 商品化
+ ├─ 价格雪崩:Devin 从 $500/月降到 $20 起 + 用量计费 —— 后台 agent 商品化  <!-- ⚠️ v5.8 核查修正(2026-09-14):此事件实际发生于 2025-04-03,已移入上方 2025 时间线,此行保留作历史痕迹 -->
  ├─ 自托管出圈:2026-01 OpenClaw(🦞 小龙虾)定名爆火,2026-02 Hermes Agent
  │              (🐎 爱马仕)开源两月揽 6 万+ star —— 个人常驻 Agent 成独立品类(见 13 章)
  ├─ 并购整合:Codeium ──► Windsurf ──► 并入 Cognition 成为 Devin Desktop
@@ -886,7 +887,7 @@ CrewAI / Pydantic AI / PraisonAI ──►  LangGraph / MS Agent Framework / Agn
 
 ### 6.2 三条主线解读
 
-**主线一:后台云 Agent 商品化。** 2025 年"派任务给云端 agent 异步执行"还是高端功能(Devin $500/月),2026 年已是 $20 起步的标配——Claude Code 有远程模式、Codex 有 Cloud、Cursor 有后台 agents、Jules 免费档就带 15 任务/天。竞争的焦点从"有没有"变成"单价、并发、与现有工作流的贴合度"。
+**主线一:后台云 Agent 商品化。** 2025 年初"派任务给云端 agent 异步执行"还是高端功能(Devin $500/月),2025-04 Devin 2.0 降价后已迅速成为 $20 起步的标配 <!-- ✅ v5.8 核查修正(2026-09-14,来源:Devin 官方 release notes) -->——Claude Code 有远程模式、Codex 有 Cloud、Cursor 有后台 agents、Jules 免费档就带 15 任务/天。竞争的焦点从"有没有"变成"单价、并发、与现有工作流的贴合度"。
 
 **主线二:并购整合与收敛。** 独立 IDE/工具的生存空间被挤压:Codeium 变身 Windsurf 再并入 Cognition,Continue 归入 Cursor,Gemini Code Assist 个人档停售。判断:个人开发者市场容不下太多同质产品,未来继续向"模型厂商嫡系(Claude Code/Codex/Gemini)+ 平台巨头(Copilot)+ 少数独立头部(Cursor)"收敛。
 
@@ -895,7 +896,7 @@ CrewAI / Pydantic AI / PraisonAI ──►  LangGraph / MS Agent Framework / Agn
 | 协议 | 解决的问题 | 一句话 |
 |------|-----------|--------|
 | **MCP** | Agent ↔ 工具/数据 | 工具接入的事实标准,各家产品与框架都已支持 |
-| **A2A** | Agent ↔ Agent | 跨厂商 Agent 协作,2026 年 1.0 进入 Linux Foundation 治理 |
+| **A2A** | Agent ↔ Agent | 跨厂商 Agent 协作,2025-06 捐入 Linux Foundation 治理,1.0 稳定版 2026-03-12 <!-- ✅ v5.8 核查修正(2026-09-14):原写「2026 年 1.0 进入 LF」把捐赠年份与 1.0 发布年份混为一谈 --> |
 | **ACP** | 客户端 ↔ Agent 进程 | IDE/桌面客户端并排调度多个 Agent(Devin Desktop 为代表) |
 
 ### 6.3 并购整合关系图(2024→2026)
