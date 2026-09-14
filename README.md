@@ -1,5 +1,7 @@
 <div align="center">
 
+<img src="assets/social-preview.png" alt="AI / LLM / Agent 全栈深度学习资源索引" width="820"/>
+
 # 🤖 AI / LLM / Agent 全栈深度学习资源索引
 
 **一本从"看懂"到"造出来"的中文 Agent 系统学习手册**
