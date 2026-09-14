@@ -1,5 +1,12 @@
 # AI / LLM / Agent 全栈深度学习资源索引
 
+[![GitHub Stars](https://img.shields.io/github/stars/123caiji/AI-LLM-Agent-Learning?style=social)](https://github.com/123caiji/AI-LLM-Agent-Learning/stargazers)
+[![Release](https://img.shields.io/github/v/release/123caiji/AI-LLM-Agent-Learning)](https://github.com/123caiji/AI-LLM-Agent-Learning/releases)
+[![Last Commit](https://img.shields.io/github/last-commit/123caiji/AI-LLM-Agent-Learning)](https://github.com/123caiji/AI-LLM-Agent-Learning/commits/main)
+[![Repo Size](https://img.shields.io/github/repo-size/123caiji/AI-LLM-Agent-Learning)](https://github.com/123caiji/AI-LLM-Agent-Learning)
+
+> ⭐ 如果这份笔记对你有帮助,点个 **Star** 支持一下;发现错误欢迎提 Issue / PR,一起把它变得更好。
+
 > 按 11 大类系统组织 AI 全栈知识:**交互入口 → 通信协议 → 智能体主体 → 能力约束 → 任务编排 → 提示推理 → 记忆状态 → RAG 知识库 → 模型底座 → 部署运维 → 安全评估**,另加三篇专题:**《12-主流Agent对比分析》**(市场选型)、**《13-自托管个人Agent》**(OpenClaw/Hermes 框架解读)、**《14-多模态Agent》**(VLM/GUI 操作/语音原理笔记)。所有内容已对照 2026 年最新官方文档与社区实践整理。本 README 是整个知识体系的"地图 + 索引 + 学习指南",看完它你就能找到任何 AI 工程化概念的位置。
 
 ---
