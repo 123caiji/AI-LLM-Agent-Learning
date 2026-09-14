@@ -29,3 +29,10 @@ build/
 # Local notes (private)
 private/
 .local/
+
+# Secrets & local runtime state
+.env
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal
+agent_audit.jsonl

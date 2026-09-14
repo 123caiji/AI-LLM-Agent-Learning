@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "personal-research-agent"
+version = "0.1.0"
+description = "《AI-LLM-Agent-Learning》第15章配套实战:个人研究助手 Agent(LangGraph + OpenAI 兼容协议)"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+dependencies = [
+    "langgraph>=1.0",
+    "langgraph-checkpoint-sqlite>=2.0",
+    "langchain-core>=1.0",
+    "langchain-openai>=1.0",
+    "duckduckgo-search>=6.0",
+]
+
+[project.optional-dependencies]
+eval = ["ddgs>=9.0"]
+
+[project.scripts]
+research-agent = "research_agent.__main__:main"
+
+[tool.setuptools.packages.find]
+include = ["research_agent*"]

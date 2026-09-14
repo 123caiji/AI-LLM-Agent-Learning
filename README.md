@@ -229,6 +229,7 @@
 - **一句话:** 手把手教你如何从零构建一个生产级 Agent——不是学"Agent 是什么",而是学"Agent 怎么做"。
 - **核心概念:** 九阶段生命周期、框架分析六维模型、单/多Agent架构设计、模型接入层、工具设计与MCP封装、提示词工程、记忆与RAG接入、手写vs LangGraph双版本实战、评估与迭代闭环、安全加固与部署上线、十大失败模式
 - **特色:** 框架决策树与六维雷达、手写 Agent Loop vs LangGraph 双版本完整可运行代码对比、MCP 工具封装实战、十大失败模式排查表
+- **配套实战代码:** [`examples/personal-research-agent/`](examples/personal-research-agent/) — 真实可运行的"个人研究助手 Agent"(LangGraph 实现):四个真实工具(笔记检索/联网搜索/文件读写)、HITL 审批门、checkpoint 持久化、离线冒烟测试与 eval 数据集,`pip install -r requirements.txt` 即可跑
 - **关键问题:** 我要自己造一个 Agent,从哪开始、用什么框架、怎么上线?
 
 ---
@@ -1254,6 +1255,21 @@
 | **合计** | **~28,550** | **547(速查表)** | **680+ 表格** | **670+ 代码块** | ✅ |
 
 ### 15.2 版本日志
+
+#### v5.6(2026-09-14 第 15 章配套实战代码:真实可运行的个人研究助手 Agent)
+
+> **个人学习总结,欢迎斧正。** 本轮迭代不改章节正文,而是为第 15 章《构建自己的Agent全流程》
+> 补上"能跑"的部分:一个真实可运行的配套实战项目 `examples/personal-research-agent/`。
+
+**新增 `examples/personal-research-agent/`(17 个文件):**
+- ✅ **真实 Agent,不是伪代码**:基于 LangGraph 图编排的 ReAct 式循环,checkpoint 持久化(MemorySaver/SqliteSaver),CLI 入口 `python -m research_agent "研究题目"`
+- ✅ **四个真实工具**(与 15 章 §1.2 案例表同名同风险分级):`search_notes`(纯 Python TF-IDF 检索本地 Markdown 笔记库,默认即本书 15 个章节)、`web_search`(DuckDuckGo 真实联网 + 不可信内容边界包装)、`read_file`/`write_file`(路径白名单防穿越)
+- ✅ **三层安全**(对应 11 章):System Prompt 减伤 → 路径白名单拦截 → `interrupt()` 人工审批门(写文件必须批准)+ JSONL 审计日志
+- ✅ **eval 先行**(对应 15 章 §10):`evals/` 含 6 条三层用例(unit/task/boundary)+ LLM-as-Judge(无端点时诚实标记 skipped);`tests/test_smoke.py` 6 项离线冒烟测试,无需 API key 即可验证图结构、审批门、路径穿越防护
+- ✅ **模型接入层**(对应 15 章 §5):OpenAI 兼容协议,`OPENAI_API_KEY/OPENAI_BASE_URL/MODEL_NAME` 环境变量驱动,可接本地 vLLM/Ollama 或任意厂商兼容端点
+- ✅ 中文 README:ASCII 架构图、快速开始、与书中 14 个章节小节的对应表
+
+**README 更新:** 第 15 章介绍新增"配套实战代码"条目
 
 #### v5.5(2026-08-03 注意力机制深度/线性注意力/MegaKernel/RL Rollout/Agent记忆系统)
 

@@ -1,0 +1,8 @@
+# 宽松钉版本:下限为本项目实测通过的版本
+langgraph>=1.0
+langgraph-checkpoint-sqlite>=2.0
+langchain-core>=1.0
+langchain-openai>=1.0
+# duckduckgo-search 已更名为 ddgs,两者任选;代码做了双导入兼容
+ddgs>=9.0 ; python_version >= "3.10"
+duckduckgo-search>=6.0
