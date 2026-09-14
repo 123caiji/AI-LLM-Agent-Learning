@@ -12,6 +12,10 @@
 > - 文中能力雷达评分、对比表中的"难度""倾向"等判断为**编辑判断**(主观评估,用于辅助理解相对位置),非官方数据。
 > - 本章为个人学习笔记,不构成任何采购或投资建议;代装服务价格来自公开报道,列出不代表推荐。
 
+> ✅ **v5.7 核查注记(2026-09-14):OpenClaw 真实存在**——GitHub: github.com/openclaw/openclaw,创始人 Peter Steinberger(PSPDFKit 创始人),曾用名 Clawdbot/Moltbot(为避开 Anthropic "Claude" 商标而改名),MIT 许可,由独立 501(c)(3) 非营利组织 **OpenClaw Foundation** 治理(捐赠方含 OpenAI、Amazon、Red Hat),支持 WhatsApp / Telegram / Slack / Discord / iMessage 等 **20+ 渠道**;2026-08 约 **38 万 Stars**(各聚合来源口径 34.6 万~38 万,为第三方聚合数据),是 2026 年增长最快的开源项目之一。早期版本曾将本项目标记为"存疑",**本轮核查已推翻该结论**。
+>
+> ✅ **v5.7 核查注记(2026-09-14):Hermes Agent 真实存在**——Nous Research 于 **2026-02-25** 发布,GitHub: github.com/NousResearch/hermes-agent,MIT 许可,主打**持久记忆 + 自我改进 Skills**(基于 GEPA/DSPy,相关工作为 ICLR 2026 Oral),支持 **27+ 渠道**;2026-08 约 **22.9 万 Stars**(第三方聚合口径)。2026-07,Nous Research 以 **15 亿美元估值**获至少 **7500 万美元**融资(Robot Ventures 领投,TechCrunch 报道);2026-05 曾有社区指控其借鉴 EvoMap Evolver 未署名的治理争议。
+
 **本章结构地图:**
 
 | 节 | 内容 | 回答的问题 | 篇幅 |
@@ -597,6 +601,16 @@ hermes claw migrate --dry-run    # 先预览会迁移什么,不动手
 | API Key 用的主账号 | 账单与主账号绑定,无上限 | 账单失控 + 泄露即失全部 | 换成专用 Key 了吗?额度上限设了吗? |
 
 > 任何一格答不上来,回到 5.3 对应的军规补课。**这个品类的安全性,上限看模型,下限看你的配置。**
+
+### 5.5 供应链安全警示:ClawHub 恶意技能事件
+
+> **v5.7 新增(2026-09-14)**
+
+- **ClawHub 供应链事件:** 2026-02,OpenClaw 官方技能市场 ClawHub 曝出约 **341 个恶意技能**的供应链攻击事件(The Hacker News / Dark Reading 报道)。这印证了 5.3 军规第 7 条:第三方 Skill 就是第三方代码,技能市场需要当作 npm/PyPI 级别的供应链风险来对待。
+- **默认配置的提示注入风险:** OpenClaw 默认配置下,主会话工具直接跑在宿主机,提示注入可直达系统层(见 5.1 威胁模型)。官方给出的缓释机制是 **DM pairing**(陌生人消息先配对、批准后处理)与 **sandbox 模式**(非主会话进 Docker 沙箱)——**务必保持开启,不要为了"方便"关掉**。
+- **最小权限原则:** 自托管 Agent 的权限面 = 操作系统权限面,11 章《安全对齐评估》的最小权限原则在这里是一票否决项:能沙箱不宿主、能只读不写、敏感操作必须人在回路。
+
+> 来源:The Hacker News、Dark Reading(2026-02 报道);OpenClaw 官方文档(pairing / sandbox 机制)
 
 ---
 

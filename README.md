@@ -1256,6 +1256,37 @@
 
 ### 15.2 版本日志
 
+#### v5.7(2026-09-14 证据导向全书核查:基准数据刷新/协议治理更新/OpenClaw 存疑撤销)
+
+> **个人学习总结,欢迎斧正。** 本轮迭代不改结构,做"证据导向"的全书事实核查:对时效性最强的
+> 40+ 条声明逐条实时检索验证(官方排行榜/arXiv/官方博客),过时数据保留原文并加核查注记,
+> 事实错误予以修正并标注来源,未删除任何已有内容。
+
+**第十一章《安全对齐评估》(+95 行):**
+- ✅ 修正:**MCP-Atlas** 任务数 250 → **1,000**(500 公开+500 私有/36 服务器/220 工具),评分方法学 2026-04 改版
+- ✅ 修正:**Terminal-Bench**"GPT-5.3-Codex 77.3%"实为 TB 2.0 成绩;当前已迭代至 **4.0**(2026-08-28,资源约束入排名),两版分数不可比
+- ✅ 纠错:**EverMemOS LoCoMo 92.3%** 实为官方自评、**无第三方复现**(原"唯一三方可复现"与事实相反);MemU"横评 56.55%"未检索到出处,标 [unverified]
+- ✅ 刷新:SWE-bench Verified 饱和+OpenAI 弃用(转向 SWE-bench Pro)、ARC-AGI-2 配置口径、OSWorld 2.0、GAIA 饱和、BFCL v4 新快照、WebArena 74.3%
+- ✅ 新增 **§2.4.18 评估方法学警示与新基准**:pass^k vs pass@k/harness 效应/自报 vs 复测/版本不可比 + TB4.0/OSWorld 2.0/ALE/ARC-AGI-3/SWE-EVO/METR Time Horizon 速览
+
+**第七章《记忆会话状态》(+44 行):**
+- ✅ 同步 EverMemOS 纠错;新增 **§5.9.7 记忆基准信任危机与选型建议**(评分协议不统一/自报 vs 复测对比/Hindsight 等 2026 新系统/MEMORY.md 路线)
+
+**第九章《底层大模型底座》(+39 行):**
+- ✅ 更新:FA4 正式发布(arXiv 2603.05451/vLLM 0.17 集成)、FlashMLA Blackwell+Sparse MLA 内核、DeepSeek V4 家族时间线(CSA+HCA 取代 MLA+DSA)、Kimi K3 2.8T/FlashKDA/Transformers 一等架构、TurboQuant 争议阶段性结论(ICLR 2026 接收但第三方复测建议 FP8 仍为默认)
+
+**第十章《部署网关运维》(+26 行):**
+- ✅ 更新:TGI 已 archive 只读(2026-03)/vLLM v0.29/SGLang v0.5.19+RadixArk 分拆;PowerInfer-2 口径精确化;新增 §21.5.7 TensorRT Edge-LLM Jetson 官方教程
+
+**第二章《智能体通信协议》(+28 行):**
+- ✅ 更新:MCP 2026-07-28 仍最新+新路线图五大方向;A2A v1.0(2026-03)+迁入 AAIF;AGNTCY ACP 归档;AG-UI 17 种核心事件口径
+- ✅ 新增 **§3.8 AAIF 治理格局** + 三个同名"ACP"辨析
+
+**第十二/十三/十四章(+30 行):**
+- ✅ 13 章:**OpenClaw/Hermes Agent 真实性核查通过**(openclaw/openclaw,曾用名 Clawdbot/Moltbot,约 38 万 Stars;NousResearch/hermes-agent,约 22.9 万 Stars),撤销早期"存疑"结论;新增 §5.5 ClawHub 恶意技能供应链安全警示
+- ✅ 12 章:AutoGen/MAF/AG2 谱系修正、Gemini CLI→Antigravity 迁移、2026 下半年趋势(无人值守 Agent/HydraFusion)
+- ✅ 14 章:撤销 OpenClaw"存疑"标注(原注保留+核查说明)
+
 #### v5.6(2026-09-14 第 15 章配套实战代码:真实可运行的个人研究助手 Agent)
 
 > **个人学习总结,欢迎斧正。** 本轮迭代不改章节正文,而是为第 15 章《构建自己的Agent全流程》

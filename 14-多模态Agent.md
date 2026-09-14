@@ -654,6 +654,8 @@ Google 采用双层安全模型:
 
 > **注意:** 中文媒体广泛报道了一个名为"OpenClaw"的开源 CUA 项目(声称 28 万 Stars 超越 React),但该名称**无法从英文权威来源(GitHub Blog/Hacker News/TechCrunch)验证**,疑为中文自媒体对某真实项目的化名或夸大报道。读者如需引用,请直接访问 GitHub 核实仓库是否存在。
 
+> ✅ **v5.7 核查(2026-09-14):** OpenClaw **已确认真实存在**(GitHub: github.com/openclaw/openclaw,详见 13 章的完整核查注记),上文 v5.3 的"存疑"判定系当时英文资料不足所致,**予以撤销**(原文保留作历史痕迹)。3.7.1 表中 OpenHands / Cua / Open Interpreter 的对比内容保留有效。
+
 #### 3.7.2 开源 CUA 的核心颠覆:权限突破
 
 无论具体项目名称如何,开源 CUA 的核心颠覆点是明确的——**权限突破而非智能突破**:

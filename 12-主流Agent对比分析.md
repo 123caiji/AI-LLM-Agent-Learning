@@ -473,6 +473,8 @@ CI:红了?→ Jules 自动读取失败日志 → 继续修 → 推新 commit
 | **Gemini CLI** | 开源终端 agent | 代码开源、支持 MCP、个人有免费额度,是零预算终端路线的首选之一 |
 | **Antigravity** | Agent 优先的 IDE | 协调编辑器/终端/浏览器/云的"多面体"IDE,Agent 是一等公民而非插件 |
 
+> ✅ v5.7 核查更新(2026-09-14,来源:aicatchup.com 等):Gemini CLI 的**免费消费级入口已于 2026-06-18 终止**,免费/Pro/Ultra 用户被引导迁移至 **Antigravity CLI**;**开源仓库与企业/API 路径继续维护**。上表"个人有免费额度"的描述对应终止前口径,保留作历史记录;零预算终端路线请改看 Antigravity CLI 或 OpenCode。
+
 **适合谁:** 零预算个人(Free 档 15 任务/天足够日常);批量小工单(依赖升级、样板修改、简单 bug 修复);Google 生态用户。
 
 **常见坑:**
@@ -783,6 +785,8 @@ Lovable/Bolt.new/v0            git 导出             Claude Code/Codex/Cursor
 
 > **实践建议:** 维护老 AutoGen v0.2 代码 → 评估 AG2;微软官方技术栈的新项目 → 直接用 Microsoft Agent Framework,别再新建 AutoGen 项目。
 
+> ✅ v5.7 核查修正(2026-09-14,来源:dutchstartup.ai 等):谱系时间线订正——**Microsoft Agent Framework 公开预览发布于 2025-10-01**;**AutoGen 与 Semantic Kernel 同日(2025-10)进入维护模式**(仅修 bug,不再加新特性);MAF 1.0 于 **2026-04-02 GA**(修正上表与 4.3 节"2026-04-03"的表述)。AG2(ag2.ai)为原作者 **Chi Wang / Qingyun Wu** 的社区分叉,Apache 2.0 许可,独立活跃开发,**已支持 A2A 协议**。
+
 ### 4.5 组合用法:业界的普遍实践
 
 ```
@@ -918,6 +922,16 @@ Gemini Code Assist 个人档 ── 2026-06 停售 ──► Google 收敛至 Ge
 1. **独立工具向"有模型的厂商"或"有平台的巨头"靠拢**——没有模型与分发渠道的中间层最难活;
 2. **收购的本质是买"入口与用户习惯"**:Cognition 买 Windsurf 是买 IDE 入口,Cursor 买 Continue 是买开源社区;
 3. **产品线收敛是常态**:大厂同时养多个重叠产品(如 Google 曾同时有 Code Assist / Gemini CLI / Jules)后,通常向 1~2 个主力形态收敛——选型时优先选"厂商的主力产品线",边缘产品随时可能被砍。
+
+### 6.4 2026 下半年新趋势:无人值守与多模型编排
+
+> **v5.7 新增(2026-09-14)**
+
+- **定时/触发式无人值守 Agent 成为标配:** Claude Code 推出 **Routines**、Cursor 推出 **Automations**、Codex 上线**周期任务**——"Agent 定时自己干活"从 13 章自托管品类的卖点,下沉为主流编程 Agent 的内置能力。
+- **GitHub Project HydraFusion(研究预览):** 2026-09-04 在 Copilot CLI 上线,主打**多模型动态编排**,提供 Single / Cascade / Critique 三种模式,官方宣称成本降低 **36%~67%**(厂商自报口径)。
+- **Anthropic 新模型:** 2026-09 发布 **Claude Fable 5.1 / Mythos 5.1**,1M 上下文,缓存读价降 **75%**(厂商自报口径)——长上下文 + 缓存降价继续压低 Agent 的运营成本。
+
+> 来源:aicatchup.com(Gemini CLI 变更,见 2.8 节注记)、dutchstartup.ai(MAF 谱系,见 4.4 节注记)、aiagentstore.ai(2026 下半年趋势)
 
 ---
 
