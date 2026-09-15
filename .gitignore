@@ -36,3 +36,6 @@ private/
 *.sqlite-shm
 *.sqlite-wal
 agent_audit.jsonl
+
+# 博客本地副本(独立 git 仓库,勿纳入本仓库)
+blog-site/
