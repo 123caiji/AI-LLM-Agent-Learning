@@ -837,6 +837,11 @@ BASE_URL = "https://your-endpoint/v1"
 API_KEY  = "your-api-key"
 MODEL    = "your-model"
 
+# ⚠️ v5.8 核查修正(2026-09-14):TOOLS / SYSTEM 定义同 9.1.1,此处直接复用。
+#    原文标注「完整可运行」但未含这两者定义,独立保存运行会 NameError。
+# SYSTEM = """你是个人研究助手..."""
+# TOOLS  = [ ... ]
+
 # ========== 状态:共享字典,LangGraph 自动持久化 ==========
 class State(TypedDict):
     messages: Annotated[list, add_messages]  # add_messages 自动合并而非覆盖
