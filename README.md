@@ -1236,6 +1236,7 @@
 > 本表经 v5.7 证据核查(2026-09-14)刷新,来源见各章节对应注记。
 > ✅ 每周核查(2026-09-16): README 仅"主流 LLM"行更新,其余无变化。
 > ✅ 每周核查(2026-09-20): 更新vLLM版本/Gemini系列/τ³-bench口径; 其余无变化。
+> ✅ 每周核查(2026-09-21): 更新SGLang版本/ARC-AGI-3/τ-bench/MCP-Atlas/Terminal-Bench/OSWorld/BFCL口径; 其余无变化。
 
 | 技术/规范 | 版本/日期 | 说明 |
 |----------|----------|------|
@@ -1248,7 +1249,7 @@
 | **OpenAI Agents SDK** | - | 三原语(Agents / Handoffs / Guardrails)+ Tracing |
 | **AGENTS.md** | - | 60k+ 项目采用;AAIF 成员项目 |
 | **主流框架** | MAF 1.0 GA(2026-04) | LangGraph / CrewAI / DSPy / LlamaIndex;AutoGen 与 Semantic Kernel 2025-10 起维护模式,社区分叉 AG2 活跃 |
-| **推理引擎** | vLLM **v0.29.0** (2026-09-09) / SGLang **v0.5.19** | vLLM v0.25 起 Model Runner V2 默认、PagedAttention 移除;SGLang 已分拆为公司 RadixArk;**TGI 已归档只读(2026-03)**;另有 Ollama / TensorRT-LLM |
+| **推理引擎** | vLLM **v0.29.0** (2026-09-09) / SGLang **v0.5.20** (2026-09-05) | vLLM v0.25 起 Model Runner V2 默认、PagedAttention 移除;SGLang 已分拆为公司 RadixArk;**TGI 已归档只读(2026-03)**;另有 Ollama / TensorRT-LLM |
 | **主流 LLM** | 2026-09 快照 | GPT-6 系列(Astra) / Claude 5 系列(Fable/Mythos) / Gemini 3.8 系列(Flash/Flash Cyber/Pro) / DeepSeek V4 家族(V4.1-Flash,2026-09-10) / Llama 4 / Qwen 3 |
 | **评估基准(当前主战场)** | 2026-09 快照 | SWE-bench **Pro**(Verified 已饱和)/ Terminal-Bench **4.0** / OSWorld **2.0** / ARC-AGI-3 / τ³-bench / BFCL v4 |
 | **OWASP LLM Top 10** | 2025 版 | 最新 LLM 应用安全风险 |
