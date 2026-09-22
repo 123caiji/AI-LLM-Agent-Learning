@@ -1238,6 +1238,7 @@
 > ✅ 每周核查(2026-09-20): 更新vLLM版本/Gemini系列/τ³-bench口径; 其余无变化。
 > ✅ 每周核查(2026-09-21): 更新SGLang版本/ARC-AGI-3/τ-bench/MCP-Atlas/Terminal-Bench/OSWorld/BFCL口径; 其余无变化。
 > ✅ 每周核查(2026-09-22): 修正SGLang日期为2026-09-18; 更新Claude系列为Fable 5.1/Mythos 5.1; τ²-bench榜首更新。
+> ✅ 每周核查(2026-09-23): 纠正BFCL v4 BTL-3误判; 更新ARC-AGI-3精确值/OSWorld 2.0补充; Terminal-Bench 4.0 harness差异注记。
 
 | 技术/规范 | 版本/日期 | 说明 |
 |----------|----------|------|
