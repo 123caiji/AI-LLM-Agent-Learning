@@ -1244,6 +1244,7 @@
 > ✅ 每周核查(2026-09-30): 更新Terminal-Bench 4.0榜首/Claude Sonnet 5.5/BFCL v4第三方数据源; 其余无变化。
 > ✅ 每周核查(2026-10-05): 更新SGLang版本(v0.5.21)/Terminal-Bench 4.0榜首/ARC-AGI-3官方成绩/新模型(GPT-6.1 Sol、Gemini 4 Argon); 其余无变化。
 > ✅ 每周核查(2026-10-09): 更新vLLM版本(v0.31.0); 其余无变化。
+> ✅ 每周核查(2026-10-11): 更新OSWorld 2.1/Claude Haiku 5.5; 其余无变化。
 
 | 技术/规范 | 版本/日期 | 说明 |
 |----------|----------|------|
@@ -1257,8 +1258,8 @@
 | **AGENTS.md** | - | 60k+ 项目采用;AAIF 成员项目 |
 | **主流框架** | MAF 1.0 GA(2026-04) | LangGraph / CrewAI / DSPy / LlamaIndex;AutoGen 与 Semantic Kernel 2025-10 起维护模式,社区分叉 AG2 活跃 |
 | **推理引擎** | vLLM **v0.31.0** (2026-10-03) / SGLang **v0.5.21** (2026-10-01) | vLLM v0.25 起 Model Runner V2 默认、PagedAttention 移除;v0.31 新增 fast-restart 权重缓存(`vllm preload`)、DeepSeek-V4.1-Flash FlashMLA 默认、717 commits 大幅迭代;SGLang 已分拆为公司 RadixArk;**TGI 已归档只读(2026-03)**;另有 Ollama / TensorRT-LLM |
-| **主流 LLM** | 2026-10 快照 | GPT-6 系列(Astra/6.1 Sol/Luna) / Claude 5 系列(Fable 5.1/Mythos 5.1/Opus 5.5/Sonnet 5.5) / Gemini 4 Argon / Gemini 3.8 系列(Flash/Flash Cyber/Pro) / DeepSeek V4 家族(V4.1-Flash,2026-09-10) / Llama 4 / Qwen 3 |
-| **评估基准(当前主战场)** | 2026-09 快照 | SWE-bench **Pro**(Verified 已饱和)/ Terminal-Bench **4.0** / OSWorld **2.0** / ARC-AGI-3 / τ³-bench / BFCL v4 |
+| **主流 LLM** | 2026-10 快照 | GPT-6 系列(Astra/6.1 Sol/Luna) / Claude 5 系列(Fable 5.1/Mythos 5.1/Opus 5.5/Sonnet 5.5/Haiku 5.5,2026-10-07) / Gemini 4 Argon / Gemini 3.8 系列(Flash/Flash Cyber/Pro) / DeepSeek V4 家族(V4.1-Flash,2026-09-10) / Llama 4 / Qwen 3 |
+| **评估基准(当前主战场)** | 2026-10 快照 | SWE-bench **Pro**(Verified 已饱和)/ Terminal-Bench **4.0** / OSWorld **2.1**(2026-09-16 发布,2.0 bug-fix 版) / ARC-AGI-3 / τ³-bench / BFCL v4 |
 | **OWASP LLM Top 10** | 2025 版 | 最新 LLM 应用安全风险 |
 | **EU AI Act** | 2024-08 生效 | 全球首个综合 AI 监管法 |
 ---
