@@ -14,6 +14,21 @@
 > - 文中的"自主性评分""能力雷达评分"等为**编辑判断**(主观评估,用于辅助理解相对位置),非官方数据。
 > - 本章为个人学习笔记,不构成采购建议;如有错误欢迎指正。
 
+> 📌 **v5.8 刷新注记(2026-10-15 核查,口径 2026-07 → 2026-10):**
+> 三个月内格局又发生多起重大变化,原文保留、以本节注记与各小节注记为准:
+>
+> | 变化 | 要点 | 来源 |
+> |------|------|------|
+> | **SpaceX 收购 Cursor** | SpaceX 以 **$60B 全股票**收购 Anysphere,2026-08-14 完成——有记录以来最大风投支持初创收购案;Cursor 年化收入 2026-06 约 $4B | CloudZero、Presenc.ai |
+> | **Cursor 改售 "The X Subscription"** | 2026-10-12 起官网改卖 X 订阅:Free / Plus $8(仅 Grok)/ Premium $30 / Super $100 / Ultra $200;第三方模型(Claude/GPT/Gemini)从 Premium 起、按 API 标价另计;旧 Pro/Pro+/Ultra 老用户可保留 | FelloAI(2026-10-14 核对官网) |
+> | **采用率洗牌** | JetBrains Developer Ecosystem Survey 2026(1.5 万+开发者,5-7 月窗口):职场使用率 **Claude Code 39% > Copilot 21% > Codex 16% > Cursor 12%**;90% 开发者每周用、68% 每天用 AI 编程 Agent | Uvik 对 JetBrains 调查的分析 |
+> | **口碑与装机量分离** | The Pragmatic Engineer 2026 调查"最喜爱工具":Claude Code 46%、Cursor 19%、Copilot 9%;但装机量 Copilot 仍以 2,000 万+用户居首 | Pragmatic Engineer、Presenc.ai |
+> | **Codex 放量** | OpenAI 公布 Codex 周活 500 万+(2026-06-02,最后一次单独披露);JetBrains 口径从 1 月 3% 升至 16%,是最快的后来者 | Presenc.ai、Uvik |
+> | **Windsurf 彻底并入** | windsurf.com/pricing 已 302 跳转 devin.ai/pricing;Devin 档位:Free / Pro $20 / Max $200 / Teams $80/月 + $40/座席 | Coworker(2026-09) |
+> | **基准换榜** | Terminal-Bench 2.1(Terminus 2 harness,Artificial Analysis 独立跑):Codex CLI(GPT-5.6 Sol)89.5%、Claude Code(Opus 5)89.1%、Gemini CLI/Antigravity 70.7%——前两名差距已在噪声级 | Morph LLM(2026-10) |
+>
+> 各产品定价小节均已加注记;结论性影响见 §6.3 并购图与 §7 选型指南(编辑判断层面:Cursor 归属变化后,"独立头部"一极已不复存在)。
+
 **本章结构地图:**
 
 | 节 | 内容 | 回答的问题 | 篇幅 |
@@ -149,6 +164,8 @@
 ### 2.2 总对比表
 
 > 价格为 2026-07 官网入门档口径;"自主性"为编辑判断(★越多越能完全委托);变动频繁,以官网为准。
+>
+> 📌 **v5.8 注记(2026-10-15):** 入门价一列已多处过时——Cursor 新客改走 X 订阅(Premium $30 起才含第三方模型)、Copilot 个人档细化为 $10/$39/$100 三级、Codex CLI 开源免费;厂商一列中 Cursor 已属 SpaceX、Devin Desktop 即原 Windsurf。详见章首刷新注记与各小节注记。
 
 | 产品 | 厂商 | 入口形态 | 底层模型 | 入门价格 | 自主性 | 云端后台 | 开源 | 一句话定位 |
 |------|------|---------|---------|---------|--------|---------|------|-----------|
@@ -195,6 +212,8 @@
 | Max | $200/月 | 约 20 倍用量,重度/全职 Agent 用户 |
 
 > 以官网当前页面为准;超量也可走 API 按量付费。
+
+> 📌 **v5.8 注记(2026-10-15):** 模型已更新至 **Opus 5**(Terminal-Bench 2.1 成绩 89.1%,与榜首 Codex/GPT-5.6 Sol 的 89.5% 差距在噪声级);另见 §6.4 的 Fable 5.1 / Mythos 5.1(1M 上下文)。档位补充:**Team 标准座 $25/月(年付 $20)、Premium 座 $125/月(年付 $100)、Enterprise $20/座/月(年付)+ API 用量**;Max 档分 $100 / $200 两级(2026-10 官网口径,aiapphunters 核对)。JetBrains 2026 调查中其职场使用率达 **39%**(美国 47%),居品类第一。
 
 **权限与安全(权限模式四档):**
 
@@ -252,6 +271,8 @@ $ claude                      # 进入交互会话
 - 详细的"怎么读基准"见 2.10 节。
 
 **价格(2026-07 口径):** 随 ChatGPT 订阅——**Plus $20/月** 可用,**Pro $200/月** 更高用量。对个人而言等于"买 ChatGPT 送编程 Agent",组合性价比高。以官网为准。
+
+> 📌 **v5.8 注记(2026-10-15):** Codex CLI 已 **Apache-2.0 开源**(GitHub 约 10.9 万 star,2026-10 口径);Terminal-Bench 2.1 以 GPT-5.6 Sol 跑出了 **89.5%** 的榜首成绩(高推理档位)。OpenAI 2026-06-02 披露 Codex 周活 **500 万+**;团队侧有 **ChatGPT Business $20/用户/月** 档位。JetBrains 2026 调查中职场使用率从 1 月的 3% 升至 **16%**,是份额增长最快的选手。
 
 **权限与安全(双旋钮设计,业界样板):**
 
@@ -311,6 +332,12 @@ $ claude                      # 进入交互会话
 
 > 额度(credit)制:不同模型烧额度速度不同,选贵模型要盯着用量。以官网为准。
 
+> 📌 **v5.8 注记(2026-10-15,本节变化最大):**
+> - **归属变更:** SpaceX 以 $60B 全股票收购 Anysphere,2026-08-14 完成交割(CloudZero);Cursor 年化收入 2026-06 约 $4B。
+> - **定价体系更换:** 2026-10-12 起官网改售 **The X Subscription**(与 xAI Grok 同体系):Free / **Plus $8(仅 Grok 模型)** / **Premium $30**(第三方模型从此档起,且按 API 标价**另行计费**)/ Super $100 / Ultra $200,团队座 $30 起。旧 Pro $20 / Pro+ $60 / Ultra $200 / Teams $40·$120 老用户可保留不换(FelloAI 2026-10-14 核对官网与 xAI 公告)。
+> - **实际成本结构:** 新体系下 Grok/Cursor 自研模型(Composer 2.5)走订阅额度,Claude/GPT/Gemini 一律按 API 标价另算,Teams/Enterprise 另有 $0.25/百万 token 的 Cursor Token Rate——**重度第三方模型用户的月账单结构已与 2026-07 口径不可比**,预算请以当前官网与实测账单为准。
+> - **份额动向:** JetBrains 2026 调查职场使用率 12%(1 月为 18%),但年收入与估值增长强劲——"调查使用率"与"商业表现"出现背离,读数据时注意口径(见章首注记)。
+
 **额度使用的三条实用经验(编辑建议):**
 
 1. **日常编辑挂便宜模型,难题手动切贵模型**——把贵模型当"专家号"而不是默认门诊;
@@ -355,6 +382,8 @@ IDE(VS Code / JetBrains / Visual Studio / Xcode 等)、**GitHub.com 网页**、*
 | Enterprise | $39/用户/月 | 企业治理、策略管控 |
 
 > 以官网为准。
+
+> 📌 **v5.8 注记(2026-10-15):** 档位已细化为 **Free / Pro $10 / Pro+ $39 / Max $100**;团队侧 **Business $19/座/月、Enterprise $39/座/月**——仍是全品类最低的团队座席价(aiapphunters 2026-10 核对官网)。用户规模 2,000 万+居品类之首(Presenc.ai),但 JetBrains 2026 调查职场使用率降至 **21%**(此前 29%),呈"装机量最大、增量与口碑弱于 Claude Code"的格局。
 
 **Copilot 的"隐性优势"(为什么大组织常常默认选它):**
 
@@ -401,6 +430,8 @@ IDE(VS Code / JetBrains / Visual Studio / Xcode 等)、**GitHub.com 网页**、*
 | 用量 | $2.25/ACU | 按 Agent 计算单元用量计费;第三方实测修一个 bug 约 $5 |
 
 > 这是"低门槛 + 用量计费"模式:轻度试用很便宜,重度委派要盯 ACU 账单。以官网为准。
+
+> 📌 **v5.8 注记(2026-10-15):** windsurf.com/pricing 已直接跳转 devin.ai/pricing——Windsurf 品牌完全并入,官网档位为 **Free / Pro $20 / Max $200 / Teams $80/月 + $40/开发座席**(Coworker 2026-09 核对)。Cognition 自报收入从 2025-05 的 $37M 增至 2026-05 的 **$492M**、Devin 用量年内增长 10 倍+——**均为厂商自报口径,未经第三方审计**,看量级方向即可。第三方 AIDev 研究(2026-06)显示 Devin 是唯一 PR 接受率持续改善的 agent,但整体 agent 提案修复的拒绝率仍有 46%。
 
 **ACU 成本估算示例(按第三方实测 $5/bug 类推):**
 
@@ -878,6 +909,7 @@ CrewAI / Pydantic AI / PraisonAI ──►  LangGraph / MS Agent Framework / Agn
  ├─ 并购整合:Codeium ──► Windsurf ──► 并入 Cognition 成为 Devin Desktop
  │            Cursor 收购 Continue
  │            Gemini Code Assist 个人档 2026-06 停售(谷歌收敛产品线)
+ │            SpaceX $60B 收购 Anysphere(Cursor),2026-08-14 交割(v5.8 补)
  ├─ 协议成型:A2A 1.0(2026)进入 Linux Foundation;MCP 成事实标准;
  │            ACP 让"一个客户端并排调度多个 Agent"成为现实
  └─ 框架收割:LangGraph 1.0 / MS Agent Framework 1.0 / Pydantic AI V2 /
@@ -911,6 +943,10 @@ Cognition(Devin)──► Devin Desktop = 完整 IDE + 多 Agent 指挥中心(AC
                           │ 可并排调度:Devin Cloud / Codex / Claude Code
 
 Continue(开源 IDE 插件)── 2026 被收购 ──► Cursor(Anysphere)
+                                               │ 2026-08-14 被 SpaceX 以 $60B 全股票收购(v5.8 补)
+                                               ▼
+                                          SpaceX / xAI 体系 ──► 2026-10-12 起改售 The X Subscription
+                                                                (与 Grok 捆绑,第三方模型按 API 价另计)
 
 GitHub Copilot(微软/GitHub)── 始终为平台自有,持续扩入口
 
